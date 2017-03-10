@@ -1,0 +1,13 @@
+{
+  "name": "twilio-message-hook",
+  "version": "1.0.0",
+  "description": "A web hook for twilio messaging to capture SMS and run it through Natural Language Classifier",
+  "main": "twilio-webhook.js",
+  "dependencies": {
+    "body-parser": "^1.16.1",
+    "express": "^4.14.1",
+    "request": "^2.79.0"
+  },
+  "devDependencies": {},
+  "author": "prashant.khanal@ibm.com"
+}
