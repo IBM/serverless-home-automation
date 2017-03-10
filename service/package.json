@@ -1,0 +1,10 @@
+{
+  "name": "home-automation",
+  "version": "1.0.0",
+  "main": "app.js"
+  "dependencies": {
+    "express": "^4.14.0",
+    "body-parser": "^1.15.2",
+    "watson-developer-cloud": "^2.14.8"
+  }
+}
