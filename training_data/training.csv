@@ -1,0 +1,17 @@
+turn on the light,on,command,light
+turn on fan,command,fan,on
+shut down the fan,command,off,fan
+turn on light,on,command,light
+is the fan running,query,fan
+turn off the fan,fan,off,command
+is the light turned on,light,query
+turn the light off,off,command,light
+turn fan on,fan,command,on
+turn the fan off,fan,command,off
+turn the fan on,fan,on,command
+turn light on,on,light,command
+turn the light on,light,on,command
+shut off the fan,fan,command,off
+turn off fan,off,command,fan
+turn on the fan,on,fan,command
+turn off the light,fan,command,off
