@@ -1,5 +1,11 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const NaturalLanguageClassifierV1 = require('watson-developer-cloud/natural-language-classifier/v1');
+
+const natural_language_classifier = new NaturalLanguageClassifierV1({
+  username: '<username>',
+  password: '<password>'
+});
 
 const app = express()
 
@@ -12,7 +18,12 @@ app.post('/sms', function (request, response) {
 })
 
 app.post('/parse', function(request, response)) {
-	// TODO: NLC
+	natural_language_classifier.classify({
+	  text: '<sample text>',
+	  classifier_id: '<classifier-id>' },
+	  function(err, response) {
+	    
+	});
 })
 
 app.listen(8000, function (err) {
