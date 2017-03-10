@@ -1,9 +1,9 @@
-### Voice-controlled Home Automation Using IBM Watson, Docker, IFTTT, and Serverless
+### Raspberry Pi based IoT Gateway
 
 This guide provides a step by step tutorial to equip users to control power outlets using a Raspberry PI. The voice/text commands to trigger the outlets will be processed by IBM Watson's natural language services.
 
 - Micro SD Card
-- Raspberry PI
+- Raspberry PI 3
 - Wemo Outlet (WiFi)
 - GPIO Ribbon cable + Breakout Board
 - 433MHz RF transmitter and receiver
