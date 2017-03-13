@@ -46,8 +46,8 @@ def audio_int(num_samples=50):
                     input=True,
                     frames_per_buffer=CHUNK)
 
-    values = [math.sqrt(abs(audioop.avg(stream.read(CHUNK), 4))) 
-              for x in range(num_samples)] 
+    values = [math.sqrt(abs(audioop.avg(stream.read(CHUNK), 4)))
+              for x in range(num_samples)]
     values = sorted(values, reverse=True)
     r = sum(values[:int(num_samples * 0.2)]) / int(num_samples * 0.2)
     print " Finished "
@@ -59,11 +59,11 @@ def audio_int(num_samples=50):
 
 def listen_for_speech(threshold=THRESHOLD, num_phrases=1):
     """
-    Listens to Microphone, extracts phrases from it and sends it to 
-    Google's TTS service and returns response. a "phrase" is sound 
+    Listens to Microphone, extracts phrases from it and sends it to
+    Google's TTS service and returns response. a "phrase" is sound
     surrounded by silence (according to threshold). num_phrases controls
-    how many phrases to process before finishing the listening process 
-    (-1 for infinite). 
+    how many phrases to process before finishing the listening process
+    (-1 for infinite).
     """
 
     #Open stream
@@ -81,17 +81,10 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=1):
     rel = RATE/CHUNK
     slid_win = deque(maxlen=SILENCE_LIMIT * rel)
     #Prepend audio from 0.5 seconds before noise was detected
-    prev_audio = deque(maxlen=PREV_AUDIO * rel) 
+    prev_audio = deque(maxlen=PREV_AUDIO * rel)
     started = False
     n = num_phrases
     response = []
-    #conn = http.client.HTTPSConnection("api.ibm.com")
-    conn =  httplib.HTTPSConnection("openwhisk.ng.bluemix.net")
-    headers = {
-        'accept': "application/json",
-        'content-type': "application/json",
-        "Authorization": "Basic ZDE2ZjAwN2YtZDQxMi00NTExLTg3ZDktY2EzNGQ0MGM2Y2NlOk9Xb3NmZzBFSEhnVHc0RlBSeEZhUERXUzFJcU5naWhYOE9hekFaOVhPNzVWdGJOUUgxazV5Zng3Q1hEZGpyNWE="
-        }
     while (num_phrases == -1 or n > 0):
         cur_data = stream.read(CHUNK)
         slid_win.append(math.sqrt(abs(audioop.avg(cur_data, 4))))
@@ -119,11 +112,11 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=1):
 
 def transcribe_audio(path_to_audio_file):
     encoded_audio = open('speech.wav', 'r').read().encode("base64")
-    r = requests.post("https://openwhisk.ng.bluemix.net/api/v1/namespaces/kkbankol@us.ibm.com_dev/actions/sequenceAction?blocking=true&result=true", json={"content_type":"audio/wav","encoding":"base64","payload": encoded_audio ,"username":"11afe700-5c9b-4bf0-81b9-6e630a303933","password":"c3XekWOLRuP4"}, auth=("d16f007f-d412-4511-87d9-ca34d40c6cce", "OWosfg0EHHgTw4FPRxFaPDWS1IqNgihX8OazAZ9XO75VtbNQH1k5yfx7CXDdjr5a"))
-    return r.json()
+    // TODO: use watson speech to text service
+
 
 def save_speech(data, p):
-    """ Saves mic data to temporary WAV file. Returns filename of saved 
+    """ Saves mic data to temporary WAV file. Returns filename of saved
         file """
 
     filename = 'speech'
