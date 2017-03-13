@@ -1,3 +1,13 @@
+### TODO
+
+## Hardwares
+
+## Step 1: Register device to Watson IoT Platform
+
+## Step 2: Install dependencies in Raspberry Pi
+
+## Step 3: Run Script
+
 ### Raspberry Pi based IoT Gateway
 
 This guide provides a step by step tutorial to equip users to control power outlets using a Raspberry PI. The voice/text commands to trigger the outlets will be processed by IBM Watson's natural language services.
