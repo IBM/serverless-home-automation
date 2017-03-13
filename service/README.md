@@ -1,4 +1,2 @@
-## Natural Language Interface based Home Automation
+### Node.js app
 
-### Architecture
-![Architecture](/images/Architecture.jpg?raw=true "Architecture")
