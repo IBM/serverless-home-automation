@@ -7,14 +7,14 @@ This project highlights the architecture and technical recipes to build the voic
 
 ### Components
 - [Raspberry Pi powered Audio Interface](#raspberry-pi-powered-audio-interface)
-- [Node.js application](#node.js-application)
+- [Node.js application](#nodejs-application)
 - [Cloudant DB](#cloudant-db)
 - [Watson IoT Platform](#watson-iot-platform)
 - [Raspberry Pi as IoT Gateway](#raspberry-pi-as-iot-gateway)
 
 ### Raspberry Pi powered Audio Interface
 
-### Node.js application
+### NodeJs application
 
 ### Cloudant DB
 
