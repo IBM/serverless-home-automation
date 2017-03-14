@@ -1,0 +1,10 @@
+[Unit]
+Description=Node MQTT Client
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/node /opt/serverless-home-automation/iot-gateway/node-mqtt.js
+
+[Install]
+WantedBy=multi-user.target
+
