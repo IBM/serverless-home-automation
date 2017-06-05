@@ -13,10 +13,19 @@ Setting up the RF circuit requires the following components:
 - [Electronic Breadboard](https://www.adafruit.com/product/239)
 - USB Microphone
 
-<Ultimately what we want to do here is to arrange the components in the following circuit>
+Ultimately what we want to do here is to arrange the components to create the following circuit
+![Hardware Arch](/images/hardware_arch.jpeg "Hardware Arch")
+TODO, need to expand and add wiring details
+
+Once the Raspberry Pi is connected to the circuit, we'll need to install dependencies to allow us to interact with the RF transmitter and receiver. This can be done by running the `install_deps.sh` [script](#iot-gateway/install_deps.sh)
+
+The open source libaries that are being installed here are [wiringPi](http://wiringpi.com/) and [433Utils](https://github.com/ninjablocks/433Utils). wiringPi enables applications to read/control the Raspberry Pi’s GPIO pins. 433Utils, calls the wiringPi library to transmit and receive messages via the 433MHz frequency. In our case, each outlet has a unique RF code to turn power on and off. We’ll use one of the wiringPi utilities, titled “RFSniffer” to essentially register each of these unique codes. The 433MHz frequency is standard among many common devices such as garage door openers, thermostats, window/door sensors, car keys, etc. So this initial setup is not limited to only controlling power outlets.
+
+Once the script completes run `gpio readall` to ensure that wiringPi installed successfully.
+![GPIO](/images/gpio_output.png "GPIO")
 
 ### Audio Interface
-Once the Raspberry is setup, we'll need to configure it to recognize audio input from the USB microphone. To ensure that audio is recorded and transcribed only as needed, we'll leverage a "Hotword" detection service named [Snowboy](https://snowboy.kitt.ai/), which listens for a specific speech pattern (**Hello Watson**, in this case), and begins recording once the hotword pattern is detected. The steps required to create a voice model can be found [here](http://docs.kitt.ai/snowboy/)
+Once the Raspberry Pi is setup, we'll need to configure it to recognize audio input from the USB microphone. To ensure that audio is recorded and transcribed only as needed, we'll leverage a "Hotword" detection service named [Snowboy](https://snowboy.kitt.ai/), which listens for a specific speech pattern (**Hello Watson**, in this case), and begins recording once the hotword pattern is detected. The steps required to create a voice model can be found [here](http://docs.kitt.ai/snowboy/)
 
 ## Provision and Configure Platform Services
 - Conversation
@@ -27,9 +36,9 @@ Once the Raspberry is setup, we'll need to configure it to recognize audio input
 
 A Bluemix Account is required to provision these services. Each can be found by going to the [Bluemix Service Catalog](https://console.ng.bluemix.net/catalog), searching for the name of the service, and then clicking the "Create" button on the lower right corner.
 
-Find Service
+*Find Service*
 ![Find Service](/images/service_find.png "Find Service")
-Create Service
+*Create Service*
 ![Create Service](/images/service_create.png "Create Service")
 
 
@@ -46,5 +55,36 @@ To get started, we will create a sequence that consists of three actions. The fi
 
 The speech to text action is already built in to Openwhisk as a public package, so we’ll just need to supply our credentials for that service. Moving forward, we can create the additional actions with the following commands.
 
+```
+cd serverless-home-automation/iot_gateway/whisk_actions
+wsk action create conversation conversation.js
+wsk action create parser-python parser-python.py
+```
+Once the actions are successfully created, we can set default service credentials for each of the actions. Otherwise we’d have to pass in the service credentials every time we’d like our actions to call the Watson services. To obtain these credentials, click each provisioned service in the Bluemix dashboard, and then select the “View credentials” dropdown.
+
+![Viewing Credentials](/images/stt_creds.png "Viewing Credentials")
+
+Then insert the corresponding credentials when running the commands below.
+
+```
+wsk action update conversation -p username ${conversation_username} -p password ${conversation_password} -p workspace_id ${conversation_workspace_id}
+wsk action update parser-python -p org ${iot_org_id} -p device_id ${device_id} -p api_token ${api_token}
+wsk package bind /whisk.system/watson-speechToText myWatsonSpeechToText -p username ${stt_username} -p password ${stt_password}
+```
+
+Next, we can arrange the actions into a sequence
+```
+wsk action create homeSequence --sequence /myWatsonSpeechToText/speechToText,conversation,parser-python
+```
+
+For the sequence to be able to return the result to the Raspberry Pi, a MQTT client will need to be listening to the Watson IoT service. If the proper values have been set in the /etc/environment file, you should just have to run the following commands to create and enable a systemd service, which will automatically start on boot.
+
+```
+sudo cp serverless-home-automation/iot-gateway/node-mqtt.service /etc/systemd/system/
+sudo systemctl enable node-mqtt
+sudo systemctl start node-mqtt
+sudo systemctl status node-mqtt
+```
 
 ### Twilio
+TODO
