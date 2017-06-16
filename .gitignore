@@ -8,3 +8,5 @@ node_modules/
 
 # environment variables file
 .env
+
+.DS_Store
