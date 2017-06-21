@@ -8,26 +8,46 @@ Select the service [Catalog](https://console.ng.bluemix.net/catalog/) icon in th
 
 Select and create the "Watson IoT Platform" service
 
-![Watson IoT Image](http://i.imgur.com/ymdlMIf.png?1)
+<p align="center">
+<img src="../images/watsoniotimage.png" data-canonical-src="../images/watsoniotimage.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
+</p>
 
 Once the Watson IoT Platform has been successfully created, click the "Launch" button to access the Dashboard
 
-![Watson IoT Dashboard](../images/iotwelcome.png)
+<p align="center">
+<img src="../images/iotwelcome.png" data-canonical-src="../images/iotwelcome.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
+</p>
 
 Register your Raspberry PI with the Watson IoT Platform. This can be done by navigating to the Devices tab in the dashboard, and selecting "Add Device"
-![IoT Add Device Menu](../images/adddevice_menu.png)
+
+<p align="center">
+<img src="../images/adddevice_menu.png" data-canonical-src="../images/adddevice_menu.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
+</p>
 
 Select "Create a device type"
-![IoT Create Device](../images/adddevice.png)
+
+<p align="center">
+<img src="../images/adddevice.png" data-canonical-src="../images/adddevice.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
+</p>
 
 Enter a name for the device type. We used "homeAutomation". Continue pressing "Next" to create the device type and to Add a device. Enter a unique string of numbers and letters as the Device ID.
-![IoT Create Device Type](../images/createdevicetype.png)
+
+<p align="center">
+<img src="../images/createdevicetype.png" data-canonical-src="../images/createdevicetype.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
+</p>
 
 Next, we'll need to generate an API key to serve as credentials for the MQTT broker. Select the "Apps" option in the sidebar, and click "Generate API Key".
-![IoT Create Device Type](../images/generateapikey_menu.png)
 
-Take note of the API Key and Authentication Token, as they will be required to access the secure MQTT broker from Openwhisk and the Raspberry Pi.
-![IoT Create Device Type](../images/devicecreds.png)
+<p align="center">
+<img src="../images/generateapikey_menu.png" data-canonical-src="../images/generateapikey_menu.png" width="650" height="450" style="margin-left: auto; margin-right: auto;" />
+</p>
+
+
+Take note of the API Key and Authentication Token, as they will be required to access the secure MQTT broker from Openwhisk and the Raspberry Pi. In the cloned repository on the Raspberry Pi, place the credentials in the [node_mqtt.js](node_mqtt.js) file
+
+<p align="center">
+<img src="../images/devicecreds.png" data-canonical-src="../images/devicecreds.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
+</p>
 
 <!-- ![](https://www.ibm.com/developerworks/cloud/library/cl-mqtt-bluemix-iot-node-red-app/image004.jpg)
 
@@ -41,7 +61,6 @@ Be sure to take note of the resulting apikey/token, as it will only be shown in 
 
 ![](https://www.ibm.com/developerworks/cloud/library/cl-mqtt-bluemix-iot-node-red-app/image007.jpg)
 
-Place the credentials in the [node_mqtt.js](node_mqtt.js) file
 
 [Device Registration Steps](https://www.ibm.com/developerworks/cloud/library/cl-mqtt-bluemix-iot-node-red-app/)
 

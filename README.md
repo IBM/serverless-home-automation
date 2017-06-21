@@ -4,7 +4,7 @@ Over the past few years, we’ve seen a significant rise in popularity for intel
 ### Architecture
 ![Architecture](/images/serverless_flow.png "Architecture")
 
-Architecture flow
+*Architecture flow*
 1.	User says a command into the microphone, or sends a text to the Twilio SMS number
 2.	User input is captured and embedded in an HTTP POST request triggering an Openwhisk sequence
 3.	The first Openwhisk action in the sequence forwards the audio to Speech to Text service, and waits for the response
@@ -161,7 +161,10 @@ Twilio is a service that enables developers to integrate VoIP and SMS capabiliti
 
 To get started, please visit Twilio's registration [page](https://www.twilio.com/try-twilio). After signing up, log in and select the # icon in the menu, which will direct the browser to the [Phone Numbers](https://www.twilio.com/console/phone-numbers/incoming) configuration. Now, select the circular + button to select and register a number. After registration, click the number to configure it. Scrolling down will reveal a "Messaging" section. In the form titled "A Message Comes in", paste the webhook associated with the "homeSequence" Openwhisk action, as seen below.
 
-![Configure Messaging](/images/configure_messaging_generic.png "Configure Messaging")
+<p align="center">
+<img src="./images/configure_messaging_generic.png" data-canonical-src="./images/createdevicetype.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
+</p>
+
 
 # License
 [Apache 2.0](LICENSE)
