@@ -132,7 +132,6 @@ Once the actions are successfully created, we can set default service credential
 <img src="/images/stt_creds.png" data-canonical-src="/images/stt_creds.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
 </p>
 
-
 Then insert the corresponding credentials when running the commands below.
 
 ```
@@ -165,6 +164,27 @@ To get started, please visit Twilio's registration [page](https://www.twilio.com
 <img src="./images/configure_messaging_generic.png" data-canonical-src="./images/createdevicetype.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
 </p>
 
+
+### Troubleshooting
+
+RC Circuit:
+After checking each of the wires to ensure they are lined up correctly, use a [multimeter](https://learn.sparkfun.com/tutorials/how-to-use-a-multimeter) to check each of the connection nodes starting from the power source. For example, to ensure that RF components are being powered properly, touch the negative/grounded end of the multimeter to the grounded power rail, and touch the positive end of the multimeter to the RF components 5V pin.
+
+Bluemix Services:
+Whenever any of the Bluemix components (Speech to Text, Conversation, etc) seem to be unresponsive, check the [Bluemix Status page](https://status.ng.bluemix.net/) to see if the service is down or under maintenence. If not, try running a sample request using curl and ensure that a 200 HTTP response is returned. A sample request against the speech-to-text service would look like so.
+```
+curl -v -u ${username}:${password} https://stream.watsonplatform.net/speech-to-text/api/v1/models
+```
+
+Openwhisk:
+Add -vv to any wsk command `wsk -vvv action list` to view the
+Also, check the activity log in the [Openwhisk dashboard](https://console.bluemix.net/openwhisk/dashboard)
+
+Raspberry Pi:
+Run `journalctl -ru node-mqtt` to view the stdout and stderr output of the Raspberry Pi's node server
+
+Twilio:
+Visit the [Twilio logging](https://www.twilio.com/console/sms/logs) url to view output for incoming and outgoing SMS messages
 
 # License
 [Apache 2.0](LICENSE)
