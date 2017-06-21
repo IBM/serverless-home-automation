@@ -23,7 +23,6 @@ Architecture flow
   * Capture RF codes corresponding to wireless sockets
 - [Provision Bluemix Services](#provision-and-configure-platform-services)
 - [Create Serverless Functions](#openwhisk)
-- [Integration/Testing]()
 
 ## Configure Hardware Components
 
@@ -89,7 +88,10 @@ source /etc/environment
 Now that we can control the sockets manually via cli, we’ll move forward and experiment with different ways to control them in an automated fashion. Rather than writing and executing pipelines and complex automation logic on the Raspberry Pi, we’ll utilize a serverless, event driven platform called Openwhisk. In this implementation, Openwhisk actions communicate with the Raspberry Pi via MQTT messages.
 
 ### Audio Interface
-Once the Raspberry Pi is setup, we'll need to configure it to recognize audio input from the USB microphone. To ensure that audio is recorded and transcribed only as needed, we'll leverage a "Hotword" detection service named [Snowboy](https://snowboy.kitt.ai/), which listens for a specific speech pattern (**Hello Watson**, in this case), and begins recording once the hotword pattern is detected. The steps required to create a voice model can be found [here](http://docs.kitt.ai/snowboy/)
+Once the Raspberry Pi is setup, we'll need to configure it to recognize audio input from the USB microphone. To ensure that audio is recorded and transcribed only as needed, we'll leverage a "Hotword" detection service named [Snowboy](https://snowboy.kitt.ai/), which listens for a specific speech pattern (**Hello Watson**, in this case), and begins recording once the hotword pattern is detected. The steps required to create a voice model can be found [here](http://docs.kitt.ai/snowboy/).
+
+Troubleshooting to
+
 
 ## Provision and Configure Platform Services
 - [Conversation](https://console.bluemix.net/catalog/services/conversation)
@@ -160,3 +162,6 @@ Twilio is a service that enables developers to integrate VoIP and SMS capabiliti
 To get started, please visit Twilio's registration [page](https://www.twilio.com/try-twilio). After signing up, log in and select the # icon in the menu, which will direct the browser to the [Phone Numbers](https://www.twilio.com/console/phone-numbers/incoming) configuration. Now, select the circular + button to select and register a number. After registration, click the number to configure it. Scrolling down will reveal a "Messaging" section. In the form titled "A Message Comes in", paste the webhook associated with the "homeSequence" Openwhisk action, as seen below.
 
 ![Configure Messaging](/images/configure_messaging_generic.png "Configure Messaging")
+
+# License
+[Apache 2.0](LICENSE)

@@ -12,19 +12,24 @@ Select and create the "Watson IoT Platform" service
 
 Once the Watson IoT Platform has been successfully created, click the "Launch" button to access the Dashboard
 
-![Watson IoT Dashboard](http://i.imgur.com/qP3akwu.png?1)
+![Watson IoT Dashboard](../images/iotwelcome.png)
 
 Register your Raspberry PI with the Watson IoT Platform. This can be done by navigating to the Devices tab in the dashboard, and selecting "Add Device"
+![IoT Add Device Menu](../images/adddevice_menu.png)
 
-![IoT Create Device](https://www.ibm.com/developerworks/cloud/library/cl-mqtt-bluemix-iot-node-red-app/image003.jpg)
+Select "Create a device type"
+![IoT Create Device](../images/adddevice.png)
 
-Choose Create a device type for the Device Type option.
+Enter a name for the device type. We used "homeAutomation". Continue pressing "Next" to create the device type and to Add a device. Enter a unique string of numbers and letters as the Device ID.
+![IoT Create Device Type](../images/createdevicetype.png)
 
-Fill in the Device Type as MQTTDevice. We will use that value later.
+Next, we'll need to generate an API key to serve as credentials for the MQTT broker. Select the "Apps" option in the sidebar, and click "Generate API Key".
+![IoT Create Device Type](../images/generateapikey_menu.png)
 
-Fill in the Device ID with a unique id, for example, aabbccddee12. You may input your own identifier.
+Take note of the API Key and Authentication Token, as they will be required to access the secure MQTT broker from Openwhisk and the Raspberry Pi.
+![IoT Create Device Type](../images/devicecreds.png)
 
-![](https://www.ibm.com/developerworks/cloud/library/cl-mqtt-bluemix-iot-node-red-app/image004.jpg)
+<!-- ![](https://www.ibm.com/developerworks/cloud/library/cl-mqtt-bluemix-iot-node-red-app/image004.jpg)
 
 ![](https://www.ibm.com/developerworks/cloud/library/cl-mqtt-bluemix-iot-node-red-app/image005.jpg)
 
@@ -36,12 +41,15 @@ Be sure to take note of the resulting apikey/token, as it will only be shown in 
 
 ![](https://www.ibm.com/developerworks/cloud/library/cl-mqtt-bluemix-iot-node-red-app/image007.jpg)
 
-Place the credentials in the [node_mqtt.js][node_mqtt.js] file
+Place the credentials in the [node_mqtt.js](node_mqtt.js) file
 
 [Device Registration Steps](https://www.ibm.com/developerworks/cloud/library/cl-mqtt-bluemix-iot-node-red-app/)
 
+Credit:
+https://www.ibm.com/developerworks/en/cloud/library/cl-mqtt-bluemix-iot-node-red-app/index.html -->
+<!-- TODO, find and mention source for steps -->
 
-
+<!--
 ## Install Raspberry Pi dependencies
 Login to Raspberry PI and install prerequisites for wiringPi library. This library allows a user to monitor and control the Raspberry Pi's GPIO pins.
 ```
@@ -80,4 +88,4 @@ Modify lines 41 and 46 to use the RF code that was detected by RFSniffer.
 Next, run the node_mqtt.js file, which will listen on the proper mqtt channel for incoming messages from the nlc service. If the message matches a certain registered device and state, the "sendcode" command will be invoked to control the registered Etekcity outlet
 ```
 sudo node node_mqtt.js
-```
+``` -->
