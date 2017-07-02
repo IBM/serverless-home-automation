@@ -1,0 +1,5 @@
+---
+applications:
+- name: node-red-serverless
+  memory: 128M
+  command: node app.js

@@ -23,6 +23,7 @@ Over the past few years, we’ve seen a significant rise in popularity for intel
   * Capture RF codes corresponding to wireless sockets
 - [Provision Bluemix Services](#provision-and-configure-platform-services)
 - [Create Serverless Functions](#openwhisk)
+- [Deploy to Bluemix](#bluemix)
 
 ## Configure Hardware Components
 
@@ -44,7 +45,7 @@ Once all components have been obtained, assemble them to form the circuit below.
 <img src="/images/home_automation_bb.svg" data-canonical-src="/images/home_automation_bb.svg" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
 </p> -->
 
-The red wire just left of the breakout board is responsible for bridging 5 volts from the Raspberry Pi to one of the breadboard's power rails. The additional red wires to the bottom right supply those 5 volts to the RF receiver and transmitter. Same concept for the white wires, except those provide a negative charge, commonly referred to as "ground". Next, we have the green wire that connects the Raspberry Pi's GPIO pin 17 to the transmitter's data pin, and the black wire connects the GPIO pin 27 to the receiver's data pin. The reason for this can be seen in the `gpio readall` output in image below, as the transmitter defaults to [wiringPi pin 0](https://github.com/ninjablocks/433Utils/blob/master/RPi_utils/codesend.cpp#L27) which maps to BCM 17, and the receiver defaults to [wiringPi pin 2](https://github.com/ninjablocks/433Utils/blob/master/RPi_utils/RFSniffer.cpp#L25), which maps to BCM 27. These default pins can be changed by modifying either of the linked files in the 433Utils library, and recompiling the library.
+The red wire just left of the breakout board is responsible for bridging 5 volts from the Raspberry Pi to one of the breadboard's power rails. The additional red wires to the bottom right of the diagram supply those 5 volts from the power rail to the RF receiver and transmitter. Similar concept for the white wires, except those provide a negative charge, commonly referenced to as "ground". Next, we have the green wire that connects the Raspberry Pi's GPIO pin 17 to the transmitter's data pin, and the black wire connects the GPIO pin 27 to the receiver's data pin. The reason for this can be seen in the `gpio readall` output in image below, as the transmitter defaults to [wiringPi pin 0](https://github.com/ninjablocks/433Utils/blob/master/RPi_utils/codesend.cpp#L27) which maps to BCM 17, and the receiver defaults to [wiringPi pin 2](https://github.com/ninjablocks/433Utils/blob/master/RPi_utils/RFSniffer.cpp#L25), which maps to BCM 27. These default pins can be changed by modifying either of the linked files in the 433Utils library, and recompiling the library.
 
 Once the Raspberry Pi is connected to the circuit, we'll need to install dependencies to allow us to interact with the RF transmitter and receiver. This can be accomplished by running the [install_deps.sh](./iot-gateway/install_deps.sh) script.
 
@@ -163,6 +164,20 @@ To get started, please visit Twilio's registration [page](https://www.twilio.com
 <p align="center">
 <img src="./images/configure_messaging_generic.png" data-canonical-src="./images/createdevicetype.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
 </p>
+
+### Node Red
+As an alternative to creating sequences in Openwhisk, the home automation logic can be arranged using [Node Red](https://github.com/node-red/node-red). Node Red is a visual editor capable of assembling "flows", which is done by allowing users to drag, drop and connect "blocks" of code or service calls. It's worth noting that this deplyment scheme won't follow a fully serverless model, as it'll be running constantly as a node server. Since the backend logic is all in the Openwhisk serverless action pool, the devices should be able to be controlled via SMS or voice without having to set up a long running server. However, in use cases where it's preferable to use node red, we can do so by installing the package via `npm install node-red`, booting up the editor via `node-red`, and creating a flow like what we have in the diagram below. After assembling the flow, be sure to populate the authentication credentials and endpoint for each block.
+
+![Node Red](/images/noderedscreen.png "Architecture")
+<!-- <p align="center">
+<img src="/images/noderedscreen.png" data-canonical-src="/images/service_create.png" height="450" style="margin-left: auto; margin-right: auto;" />
+</p> -->
+
+To deploy a node red instance to Bluemix, click the button below
+
+[![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/kkbankol-ibm/node-red-bluemix-starter.git)
+
+[Sample Bluemix Instance](http://serverless-home-automation.mybluemix.net/red/#flow/e711dbd4.4e7d18)
 
 
 ### Troubleshooting
