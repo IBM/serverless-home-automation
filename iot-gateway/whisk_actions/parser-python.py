@@ -1,10 +1,13 @@
-import sys
 import requests
-def main(dict):
-    iot_org_id = dict['iot_org_id']
-    device_id = dict['device_id']
-    device_type = dict['device_type']
-    api_token = dict['api_token']
-    classes = [nlc_class for nlc_class in dict['msg']['classes'] if nlc_class['confidence'] > 0.1]
-    r = requests.post('http://' + iot_org_id + '.messaging.internetofthings.ibmcloud.com:1883/api/v0002/device/types/' + device_type '/devices/' + device_id + '/events/query', headers={'Content-Type': 'application/json'}, json=classes, auth=('use-token-auth', api_token))
-    return {'msg': dict['msg']['text']}
+
+
+def main(args_dict):
+    headers = {'Content-Type': 'application/json'}
+    auth = ('use-token-auth', args_dict['api_token'])
+    classes = [nlc_class for nlc_class in args_dict['msg']['classes']
+               if nlc_class['confidence'] > 0.1]
+    url = ('http://{iot_org_id}.messaging.internetofthings.ibmcloud.com:1883/'
+           'api/v0002/device/types/{device_type}/devices/{device_id}/events/'
+           'query'.format(**args_dict))
+    requests.post(url, headers=headers, json=classes, auth=auth)
+    return {'msg': args_dict['msg']['text']}
