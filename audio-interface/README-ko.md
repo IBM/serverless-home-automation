@@ -1,6 +1,6 @@
 ## Raspberry Pi를 이용하는 오디오 인터페이스
 
-*다른 언어로 : [English](readme.md)*
+*다른 언어로 보기: [English](README.md).*
 
 ### 준비 사항
 - Raspbian OS 기반의 Raspberry Pi 3
