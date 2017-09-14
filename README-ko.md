@@ -200,7 +200,7 @@ Raspberry Pi:
 `journalctl -ru node-mqtt`를 실행하여 Raspberry Pi의 노드 서버의 stdout 및 stderr 출력을 봅니다.
 
 Twilio:
-수신/발송되는 SMS 메시지에 대한 출력을 보려면 [Twilio logging](https://www.twilio.com/console/sms/logs) 을 방문
+수신/발송되는 SMS 메시지에 대한 출력을 보려면 [Twilio logging](https://www.twilio.com/console/sms/logs) 을 방문하십시오. 
 
 # License
 [Apache 2.0](LICENSE)
