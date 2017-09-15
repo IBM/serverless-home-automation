@@ -48,7 +48,7 @@ RF 회로를 조립하고 구성부터 시작하겠습니다. 이 회로에는 �
 <img src="/images/home_automation_bb.svg" data-canonical-src="/images/home_automation_bb.svg" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
 </p> -->
 
-브레이크아웃 보드의 왼쪽에 있는 빨간색 전선은 Raspberry Pi에서 브레드보드의 전원 레일 중 하나로의 5V 브리징을 합니다. 다이어그램의 오른쪽 하단에 있는 추가 빨간색 전선은 파워 레일에서 RF 수신기 및 송신기로 5 볼트를 공급합니다. 흰색 전선도 유사한 개념이지만, 이 와이어는 일반적으로 "접지"로 불리는 음전하를 제공합니다. 다음으로, 초록색 전선은 Raspberry Pi의 GPIO 핀 17을 트랜스미터의 데이터 핀에 연결하고 검은색 전선은 GPIO 핀 27을 수신기의 데이터 핀에 연결합니다. 그 이유는 아래 이미지 `gpio readall` 출력에서 볼 수 있듯이, BCM 17에 매핑되는 송신기가 [wiringPi pin 0](https://github.com/ninjablocks/433Utils/blob/master/RPi_utils/codesend.cpp#L27)을 기본값으로하기 때문에 BCM 27에 매핑되는 수신기는 [wiringPi pin 2](https://github.com/ninjablocks/433Utils/blob/master/RPi_utils/RFSniffer.cpp#L25)로 기본 설정됩니다. 이러한 기본 핀은 433Utils 라이브러리의 링크된 파일 중 하나를 수정하고 라이브러리를 다시 컴파일하여 변경할 수 있습니다.
+브레이크아웃 보드의 왼쪽에 있는 빨간색 전선은 Raspberry Pi에서 브레드보드의 전원 레일 중 하나로의 5V 브리징을 합니다. 다이어그램의 오른쪽 하단에 있는 추가 빨간색 전선은 파워 레일에서 RF 수신기 및 송신기로 5V를 공급합니다. 흰색 전선도 유사한 개념이지만, 이 와이어는 일반적으로 "접지"로 불리는 음전하를 제공합니다. 다음으로, 초록색 전선은 Raspberry Pi의 GPIO 핀 17을 트랜스미터의 데이터 핀에 연결하고 검은색 전선은 GPIO 핀 27을 수신기의 데이터 핀에 연결합니다. 그 이유는 아래 이미지 `gpio readall` 출력에서 볼 수 있듯이, BCM 17에 매핑되는 송신기가 [wiringPi pin 0](https://github.com/ninjablocks/433Utils/blob/master/RPi_utils/codesend.cpp#L27)을 기본값으로하기 때문에 BCM 27에 매핑되는 수신기는 [wiringPi pin 2](https://github.com/ninjablocks/433Utils/blob/master/RPi_utils/RFSniffer.cpp#L25)로 기본 설정됩니다. 이러한 기본 핀은 433Utils 라이브러리의 링크된 파일 중 하나를 수정하고 라이브러리를 다시 컴파일하여 변경할 수 있습니다.
 
 일단 Raspberry Pi가 회로에 연결되면 RF 송신기 및 수신기와 상호 작용할 수 있도록 종속적인 소프트웨어를 설치해야합니다. 이는 [install_deps.sh] (./iot- gateway / install_deps.sh) 스크립트를 실행하여 수행할 수 있습니다.
 
