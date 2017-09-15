@@ -33,7 +33,7 @@ We can get started by assembling and configuring the RF circuit. This circuit re
 - [Raspberry PI 3](https://www.raspberrypi.org/products/raspberry-pi-3-model-b/)
 - [GPIO Ribbon cable + Breakout Board](https://www.adafruit.com/product/914)
 - [433MHz RF transmitter and receiver](https://www.amazon.com/SMAKN%C2%AE-433Mhz-Transmitter-Receiver-Arduino/dp/B00M2CUALS)
-- [Etekcity 433 MHz Outlets](https://www.amazon.com/Etekcity%C2%AE-Wireless-Control-Switches-included/dp/B00DQELHAE/)
+- [Etekcity 433 MHz Outlets](https://www.amazon.com/dp/B00DQELHBS)
 - [Electronic Breadboard](https://www.adafruit.com/product/239)
 - [USB Microphone](https://www.amazon.com/eBerry-Adjustable-Microphone-Compatible-Recording/dp/B00UZY2YQE/ref=sr_1_9?ie=UTF8&qid=1497828013&sr=8-9&keywords=usb+microphone)
 
