@@ -22,6 +22,10 @@ ctl.!default {
 ```
 
 
+Check if audio can be recorded via microphone using
+`rec /tmp/temp.wav`
+
+
 Troubleshooting
 ```
 # jack server is not running or cannot be started

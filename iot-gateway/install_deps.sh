@@ -3,6 +3,9 @@
 sudo apt-get -y update
 sudo apt-get -y install git-core build-essential python-pyaudio python3-pyaudio sox make pulseaudio alsa-utils
 sudo easy_install pip
+touch ~/.asoundrc
+cp ~/.asoundrc ~/.asoundrc.bak
+cp ../recording-device/.asoundrc ~/.asoundrc
 
 ## Swig
 sudo apt-get -y install libpcre3 libpcre3-dev autoconf
@@ -23,7 +26,6 @@ sudo pip install pyaudio
 git clone https://github.com/Kitt-AI/snowboy/
 cd snowboy/swig/Python
 make
-
 
 ## wiringPi
 cd ~/
