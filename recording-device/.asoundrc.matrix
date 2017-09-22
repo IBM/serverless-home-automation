@@ -1,0 +1,7 @@
+pcm.!default {
+  type asym
+   capture.pcm {
+     type plug
+     slave.pcm "mic_channel8"
+   }
+}
