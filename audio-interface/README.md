@@ -1,4 +1,5 @@
 ## Raspberry Pi powered Audio Interface
+*Read this in other languages: [한국어](README-ko.md).*
 
 ### Requirements
 - Raspberry Pi 3 with Raspbian OS
