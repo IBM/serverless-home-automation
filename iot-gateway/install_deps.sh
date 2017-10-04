@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sudo apt-get -y update
-sudo apt-get -y install git-core build-essential python-pyaudio python3-pyaudio sox make pulseaudio alsa-utils
+sudo apt-get -y install git-core build-essential python-setuptools python-pyaudio python3-pyaudio sox make pulseaudio alsa-utils
 sudo easy_install pip
 touch ~/.asoundrc
 cp ~/.asoundrc ~/.asoundrc.bak
