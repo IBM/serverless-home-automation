@@ -184,7 +184,7 @@ To deploy a node red instance to Bluemix, click the button below
 
 ### Troubleshooting
 
-RC Circuit:
+RF Circuit:
 After checking each of the wires to ensure they are lined up correctly, use a [multimeter](https://learn.sparkfun.com/tutorials/how-to-use-a-multimeter) to check each of the connection nodes starting from the power source. For example, to ensure that RF components are being powered properly, touch the negative/grounded end of the multimeter to the grounded power rail, and touch the positive end of the multimeter to the RF components 5V pin.
 
 Bluemix Services:

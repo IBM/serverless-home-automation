@@ -22,6 +22,6 @@ Speech to text를 통해 글로 옮긴 내용을 트리거하기 위해 맞춤 �
 
 먼저, [Raspbian 8.0이 포함된 Raspberry Pi](https://s3-us-west-2.amazonaws.com/snowboy/snowboy-releases/rpi-arm-raspbian-8.0-1.1.0.tar.bz2) 를 위해 미리 패키지 된 Snowboy 바이너리와 Python wrapper를 다운로드하여 압축을 풉니다.
 
-압축을 푼 폴더에 [detect_hotword.py](audio-interface/detect_hotword.py) & [record_audio.py](audio-interface/record_audio.py) 를 복사하십시오.
+압축을 푼 폴더에 [detect_hotword.py](audio_interface/detect_hotword.py) & [record_audio.py](audio_interface/record_audio.py) 를 복사하십시오.
 
 
