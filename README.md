@@ -6,6 +6,8 @@
 ## Overview and goal
 Over the past few years, we’ve seen a significant rise in popularity for intelligent personal assistants, such as Apple’s Siri, Amazon Alexa, and Google Assistant. Though they initially appeared to be little more than a novelty, they’ve evolved to become rather useful as a convenient interface to interact with service APIs and IoT connected devices. This developer pattern will guide users through setting up their own starter home automation hub by using a Raspberry PI to turn power outlets off and on. Once the circuit and software dependencies are installed and configured properly, users will also be able to leverage Watson’s language services to control the power outlets via voice and/or text commands. Furthermore, we’ll show how Openwhisk serverless functions can be leveraged to trigger these sockets based on a timed schedule, changes to the weather, motion sensors being activated, etc.
 
+Click here to view the [IBM Pattern](https://developer.ibm.com/code/patterns/implement-voice-controls-for-serverless-home-automation-hub/) for this project.
+
 ## Prerequisites
 You will need the following accounts and tools:
 * [IBM Cloud account](https://console.ng.bluemix.net/registration/)
@@ -99,12 +101,11 @@ source /etc/environment
 Now that we can control the sockets manually via cli, we’ll move forward and experiment with different ways to control them in an automated fashion. Rather than writing and executing pipelines and complex automation logic on the Raspberry Pi, we’ll utilize a serverless, event driven platform called Openwhisk. In this implementation, Openwhisk actions communicate with the Raspberry Pi via MQTT messages.
 
 * **Audio Interface**
+
 Once the Raspberry Pi is setup, we'll need to configure it to recognize audio input from the USB microphone. To ensure that audio is recorded and transcribed only as needed, we'll leverage a "Hotword" detection service named [Snowboy](https://snowboy.kitt.ai/), which listens for a specific speech pattern (**Hello Watson**, in this case), and begins recording once the hotword pattern is detected. The steps required to create a voice model can be found [here](http://docs.kitt.ai/snowboy/).
 
-Troubleshooting to
-
-
 * **Provision and Configure Platform Services**
+
 - [Conversation](https://console.bluemix.net/catalog/services/conversation)
 - [Speech to Text](https://console.bluemix.net/catalog/services/speech-to-text)
 - [Watson IoT Platform](https://console.bluemix.net/catalog/services/internet-of-things-platform)
@@ -119,12 +120,15 @@ A IBM Cloud Account is required to provision these services. After logging in, s
 </p>
 
 * **Conversation**
+
 The [Conversation](https://www.ibm.com/watson/developercloud/conversation.html) service is used to analyze natural language and determine which action(s) to take based on the user input. There are two main concepts to understand here. The first are referred to as "Intents", which determine what the user would like the application to do. Next, we have "Entities", which provide context of where the intent should be applied. To keep things simple, we have two intents, one is titled "turnoff", the other "turnon". Next, we have 3 entities, which are household devices that we'd like to turn off and on in this case. This pre-trained data model can be uploaded to the provisioned Conversation service through the UI. To initiate the upload, login to the IBM Cloud console. Next select the conversation service, and then the button titled "Launch Tool".
 
 * **Watson IoT Platform**
+
 The Watson IoT Platform will be utilized as a MQTT messaging broker. This is a lightweight publish/subscribe messaging protocol that'll allow for various devices such as a Phone, Laptop, and Microphone to communicate with the Raspberry Pi. Once this service has been provisioned, we'll need to generate a set of credentials to securely access the MQTT broker. These steps are listed [here](./iot-gateway/)
 
 * **Openwhisk**
+
 Rather than writing and executing pipelines and complex automation logic on the Raspberry Pi, we’ll utilize a serverless, event driven platform called [Openwhisk](https://console.ng.bluemix.net/openwhisk). In this implementation, Openwhisk actions forward their results  to the Raspberry Pi as MQTT messages. Openwhisk is a serverless framework which has the ability to bind snippets of code to REST API endpoints. Once these have been created, they can be executed directly from any internet connected device, or they can respond to events such as a database change or a message coming in to a specific MQTT channel. Once these snippets, or "Actions" have been created, they may be chained together as a sequence, as seen above in the architecture diagram.
 
 To get started, we will create a sequence that consists of three actions. The first action will transcribe an audio payload to text. The second action will analyze the transcribed text result using the Conversation service. This analysis will extract the intent behind the spoken message, and determine what the user would like the Raspberry Pi to do. So, for example, if the user says something along the line of “Turn on the light” or “Flip the switch”, the NLC service will be able to interpret that. Finally, the third action will send a MQTT message that’ll notify the Raspberry Pi to switch the socket on/off.
@@ -167,6 +171,7 @@ sudo systemctl status node-mqtt
 ```
 
 * **Twilio**
+
 Twilio is a service that enables developers to integrate VoIP and SMS capabilities into their platform. This works by allowing developers to choose a phone number to register. Once registered, Twilio exposes an API endpoint to allow calls and texts to be made programmatically from the number. Also, the number can be configured to respond to incoming calls/texts by either triggering a webhook or following a [Twiml](https://www.twilio.com/docs/api/twiml) document. In this case, we'll configure the Twilio number to respond to incoming texts by triggering a webhook bound to the "homeSequence" Openwhisk action we created in the previous step. We can find the url to the webhook by navigating to the [Openwhisk console](https://console.bluemix.net/openwhisk/editor), selecting the homeSequence sequence, and then selecting the "View Action Details" button. Finally, check the "Enable as Web Action" button, and copy the generated Web Action URL.
 
 To get started, please visit Twilio's registration [page](https://www.twilio.com/try-twilio). After signing up, log in and select the # icon in the menu, which will direct the browser to the [Phone Numbers](https://www.twilio.com/console/phone-numbers/incoming) configuration. Now, select the circular + button to select and register a number. After registration, click the number to configure it. Scrolling down will reveal a "Messaging" section. In the form titled "A Message Comes in", paste the webhook associated with the "homeSequence" Openwhisk action, as seen below.
@@ -176,6 +181,7 @@ To get started, please visit Twilio's registration [page](https://www.twilio.com
 </p>
 
 * **Node Red**
+
 As an alternative to creating sequences in Openwhisk, the home automation logic can be arranged using [Node Red](https://github.com/node-red/node-red). Node Red is a visual editor capable of assembling "flows", which is done by allowing users to drag, drop and connect "blocks" of code or service calls. It's worth noting that this deplyment scheme won't follow a fully serverless model, as it'll be running constantly as a node server. Since the backend logic is all in the Openwhisk serverless action pool, the devices should be able to be controlled via SMS or voice without having to set up a long running server. However, in use cases where it's preferable to use node red, we can do so by installing the package via `npm install node-red`, booting up the editor via `node-red`, and creating a flow like what we have in the diagram below. After assembling the flow, be sure to populate the authentication credentials and endpoint for each block.
 
 ![Node Red](/images/noderedscreen.png "Architecture")
@@ -191,6 +197,7 @@ To deploy a node red instance to IBM Cloud, click the button below
 
 
 * **Troubleshooting**
+
 RF Circuit:
 After checking each of the wires to ensure they are lined up correctly, use a [multimeter](https://learn.sparkfun.com/tutorials/how-to-use-a-multimeter) to check each of the connection nodes starting from the power source. For example, to ensure that RF components are being powered properly, touch the negative/grounded end of the multimeter to the grounded power rail, and touch the positive end of the multimeter to the RF components 5V pin.
 
