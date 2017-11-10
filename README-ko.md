@@ -9,12 +9,12 @@
 
 *아키텍처 구성도*
 1.	사용자는 마이크에 대고 명령을 말하거나 Twilio SMS 번호로 텍스트를 보냅니다
-2.	해당 명령이 캡처되어 OpenWhisk 시퀀스를 트리거하는 HTTP POST 요청에 임베드됩니다
-3.	OpenWhisk 액션 1은 오디오를 Bluemix Speech to Text 서비스로 전달하고 응답을 기다립니다
-4.	텍스트화된 명령은 OpenWhisk 액션 2로 전달됩니다
-5.	OpenWhisk 액션 2는 Conversation 서비스를 호출하여 사용자의 텍스트 명령을 분석한 다음 응답을 기다립니다
-6.	Conversation 서비스 결과는 최종 OpenWhisk 액션으로 전달됩니다
-7.	Openwhisk 액션은 IoT MQTT 브로커에 엔티티 / 인텐트 페어(예 : "fan / turnon")를 게시합니다
+2.	해당 명령이 캡처되어 IBM Cloud Functions 시퀀스를 트리거하는 HTTP POST 요청에 임베드됩니다
+3.	IBM Cloud Functions 액션 1은 오디오를 Bluemix Speech to Text 서비스로 전달하고 응답을 기다립니다
+4.	텍스트화된 명령은 IBM Cloud Functions 액션 2로 전달됩니다
+5.	IBM Cloud Functions 액션 2는 Conversation 서비스를 호출하여 사용자의 텍스트 명령을 분석한 다음 응답을 기다립니다
+6.	Conversation 서비스 결과는 최종 IBM Cloud Functions 액션으로 전달됩니다
+7.	IBM Cloud Functions 액션은 IoT MQTT 브로커에 엔티티 / 인텐트 페어(예 : "fan / turnon")를 게시합니다
 8.	MQTT 브로커에 등록된 Raspberry Pi는 결과를 수신합니다
 9.	Raspberry Pi는 RF 신호를 전송하여 콘센트를 켜거나 끕니다
 
@@ -25,7 +25,7 @@
   * 소프트웨어 종속성 + 라이브러리 설치
   * 무선 소켓에 응당하는 RF 코드 캡처
 - [Bluemix 서비스 제공하기](#플랫폼-서비스-제공-및-설정하기)
-- [서버리스 기능 생성하기](#openwhisk)
+- [서버리스 기능 생성하기](#IBM Cloud Functions)
 - [Bluemix에 배포하기](#bluemix)
 
 ## 하드웨어 부품 설정하기
@@ -89,7 +89,7 @@ source /etc/environment
 /var/www/rfoutlet/codesend ${RF_PLUG_OFF_1} -l ${RF_PLUG_OFF_PULSE_1}
 ```
 
-이제는 cli를 통해 소켓을 수동으로 제어할 수 있기 때문에, 이 과정에서는 여러 가지 자동화된 방법으로 제어하는 것을 시도해 보겠습니다. Raspberry Pi에서 파이프라인과 복잡한 자동화 로직을 작성하고 실행하는 대신 Openwhisk라는 서버리스 이벤트-기반 플랫폼을 활용할 것입니다. 이 구현에서 Openwhisk 액션은 MQTT 메시지를 통해 Raspberry Pi와 통신합니다.
+이제는 cli를 통해 소켓을 수동으로 제어할 수 있기 때문에, 이 과정에서는 여러 가지 자동화된 방법으로 제어하는 것을 시도해 보겠습니다. Raspberry Pi에서 파이프라인과 복잡한 자동화 로직을 작성하고 실행하는 대신 IBM Cloud Functions 서버리스 이벤트-기반 플랫폼을 활용할 것입니다. 이 구현에서 IBM Cloud Functions 액션은 MQTT 메시지를 통해 Raspberry Pi와 통신합니다.
 
 ### 오디오 인터페이스
 일단 Raspberry Pi가 설정되면 USB 마이크의 오디오 입력을 인식하도록 설정해야 합니다. 필요한 경우에만 오디오를 녹음하고 텍스트화하기 위해 [Snowboy] (https://snowboy.kitt.ai/)라는 "Hotword"검색 서비스를 활용하여 특정 음성 패턴 (이 예제의 경우,** Hello Watson**)을 선택하고 핫 워드 패턴이 감지되면 녹음을 시작합니다. 음성 모델을 만드는 데 필요한 단계는 [여기](http://docs.kitt.ai/snowboy/)에서 찾을 수 있습니다.
@@ -100,7 +100,7 @@ source /etc/environment
 - [Speech to Text](https://console.bluemix.net/catalog/services/speech-to-text)
 - [Watson IoT Platform](https://console.bluemix.net/catalog/services/internet-of-things-platform)
 - [Twilio](https://console.bluemix.net/catalog/services/twilio)
-<!-- - [Openwhisk](https://console.bluemix.net/openwhisk) -->
+<!-- - [IBM Cloud Functions](https://console.bluemix.net/openwhisk) -->
 
 이러한 서비스를 제공하려면 Bluemix 계정이 필요합니다. 로그인 한 후, 위의 각 링크를 탐색하고 "서비스 생성"버튼을 선택하십시오.
 
@@ -115,8 +115,8 @@ source /etc/environment
 ### Watson IoT Platform
 Watson IoT Platform은 MQTT 메시징 브로커로 활용됩니다. 이것은 전화, 랩탑 및 마이크와 같은 다양한 장치가 Raspberry Pi와 통신할 수 있게 해주는 publish/subscribe 메시징 프로토콜입니다. 이 서비스가 프로비저닝되면 MQTT 브로커에 안전하게 액세스하기 위한 신임정보를 생성해야 합니다. 이러한 단계는 [여기](./ iot-gateway /) 에서 확인하실 수 있습니다.
 
-### Openwhisk
-Raspberry Pi에서 파이프라인 및 복잡한 자동화 로직을 작성하고 실행하는 대신 서버리스 이벤트 기반 플랫폼인 [Openwhisk](https://console.ng.bluemix.net/openwhisk) 를 활용할 것입니다. Openwhisk 액션은 결과를 MQTT 메시지로 Raspberry Pi에 전달합니다. Openwhisk는 코드 스니펫을 REST API 엔드 포인트에 바인딩할 수 있는 서버리스 프레임워크입니다. 일단 작성되면 인터넷에 연결된 모든 디바이스에서 직접 실행하거나 데이터베이스 변경 또는 특정 MQTT 채널로 들어오는 메시지와 같은 이벤트에 응답할 수 있습니다. 이러한 스니펫 또는 "액션"이 생성되면 위의 아키텍처 다이어그램과 같이 시퀀스로 함께 연결될 수 있습니다.
+### IBM Cloud Functions
+Raspberry Pi에서 파이프라인 및 복잡한 자동화 로직을 작성하고 실행하는 대신 서버리스 이벤트 기반 플랫폼인 [IBM Cloud Functions](https://console.ng.bluemix.net/openwhisk) 를 활용할 것입니다. IBM Cloud Functions 액션은 결과를 MQTT 메시지로 Raspberry Pi에 전달합니다. IBM Cloud Functions는 코드 스니펫을 REST API 엔드 포인트에 바인딩할 수 있는 서버리스 프레임워크입니다. 일단 작성되면 인터넷에 연결된 모든 디바이스에서 직접 실행하거나 데이터베이스 변경 또는 특정 MQTT 채널로 들어오는 메시지와 같은 이벤트에 응답할 수 있습니다. 이러한 스니펫 또는 "액션"이 생성되면 위의 아키텍처 다이어그램과 같이 시퀀스로 함께 연결될 수 있습니다.
 
 우선, 세 가지 액션으로 구성된 시퀀스를 만듭니다. 첫 번째 액션은 오디오 페이로드를 텍스트로 변환합니다. 두 번째 액션은 Conversation 서비스를 사용하여 문자 메시지 결과를 분석합니다. 이 분석은 음성 메시지의 의도를 추출하고, Raspberry Pi가 무엇을 하길 사용자가 원한 것인지에 대해 결정합니다. 예를 들어, 사용자가 "전등 켜기"또는 "스위치 누르기"의 행을 따라 뭔가를 말하면 NLC 서비스가 이를 해석할 수 있습니다. 마지막으로, 세 번째 액션은 MQTT 메시지를 보내서 Raspberry Pi에게 소켓을 켜고 끌 것을 알립니다
 
@@ -158,16 +158,16 @@ sudo systemctl status node-mqtt
 ```
 
 ### Twilio
-Twilio는 개발자가 VoIP 및 SMS 기능을 플랫폼에 통합할 수 있게 하는 서비스입니다. 이는 개발자가 등록할 전화번호를 선택할 수 있게하여 작동합니다. Twilio는 일단 등록하면, API 엔드 포인트를 공개하여 전화와 문자를 프로그래밍 방식으로 만들 수 있도록 번호를 설정할 수 있습니다. 또한, 그 번호는 웹훅webhook을 트리거하거나 [Twiml](https://www.twilio.com/docs/api/twiml) 문서를 따라 수신되는 전화/텍스트에 응답하도록 설정할 수 있습니다. 이 경우, 이전 단계에서 만든 "homeSequence" Openwhisk 액션에 바인딩된 웹훅을 트리거하여 수신되는 텍스트에 응답하도록 Twilio 번호를 설정합니다. [Openwhisk 콘솔](https://console.bluemix.net/openwhisk/editor)로 이동하여 homeSequence 시퀀스를 선택한 다음 "View Action Details"버튼을 선택하여 웹훅에 대한 URL을 찾을 수 있습니다. 마지막으로 "Enable as Web Action"버튼을 선택하고 생성된 웹 액션 URL을 복사합니다. 
+Twilio는 개발자가 VoIP 및 SMS 기능을 플랫폼에 통합할 수 있게 하는 서비스입니다. 이는 개발자가 등록할 전화번호를 선택할 수 있게하여 작동합니다. Twilio는 일단 등록하면, API 엔드 포인트를 공개하여 전화와 문자를 프로그래밍 방식으로 만들 수 있도록 번호를 설정할 수 있습니다. 또한, 그 번호는 웹훅webhook을 트리거하거나 [Twiml](https://www.twilio.com/docs/api/twiml) 문서를 따라 수신되는 전화/텍스트에 응답하도록 설정할 수 있습니다. 이 경우, 이전 단계에서 만든 "homeSequence" IBM Cloud Functions 액션에 바인딩된 웹훅을 트리거하여 수신되는 텍스트에 응답하도록 Twilio 번호를 설정합니다. [IBM Cloud Functions 콘솔](https://console.bluemix.net/openwhisk/editor)로 이동하여 homeSequence 시퀀스를 선택한 다음 "View Action Details"버튼을 선택하여 웹훅에 대한 URL을 찾을 수 있습니다. 마지막으로 "Enable as Web Action"버튼을 선택하고 생성된 웹 액션 URL을 복사합니다. 
 
-우선, Twilio의 [등록 페이지](https://www.twilio.com/try-twilio) 를 방문하십시오. 가입한 후 로그인하여 메뉴에서 # 아이콘을 선택하면 브라우저가 [전화번호](https://www.twilio.com/console/phone-numbers/incoming) 설정페이지로 이동합니다. 이제 동그란 + 버튼을 선택하여 번호를 선택하고 등록하십시오. 등록한 후 번호를 클릭하여 구성하십시오. 아래로 스크롤하면 '메시징'섹션이 표시됩니다. "A Message Comes in"이라는 제목의 양식에서 아래 보이는 "homeSequence"Openwhisk 액션과 관련된 웹훅을 붙여 넣으십시오.
+우선, Twilio의 [등록 페이지](https://www.twilio.com/try-twilio) 를 방문하십시오. 가입한 후 로그인하여 메뉴에서 # 아이콘을 선택하면 브라우저가 [전화번호](https://www.twilio.com/console/phone-numbers/incoming) 설정페이지로 이동합니다. 이제 동그란 + 버튼을 선택하여 번호를 선택하고 등록하십시오. 등록한 후 번호를 클릭하여 구성하십시오. 아래로 스크롤하면 '메시징'섹션이 표시됩니다. "A Message Comes in"이라는 제목의 양식에서 아래 보이는 "homeSequence"IBM Cloud Functions 액션과 관련된 웹훅을 붙여 넣으십시오.
 
 <p align="center">
 <img src="./images/configure_messaging_generic.png" data-canonical-src="./images/createdevicetype.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
 </p>
 
 ### Node Red
-Openwhisk에서 시퀀스를 생성하는 방법 대신, 홈오토메이션 로직을 [Node Red](https://github.com/node-red/node-red)를 사용하여 구성할 수 있습니다. Node Red는 사용자가 코드 또는 서비스 호출의 "블록"을 끌어다 놓고 연결할 수 있게함으로써 "흐름"을 조합할 수있는 비주얼 편집기입니다. 이 배포 방식은 노드 서버로 계속해서 실행되므로 서버리스 모델을 적용하지 않을 것입니다. 백엔드 로직은 모두 Openwhisk 서버리스 액션 풀에 있기 때문에 장기 실행(long running) 서버를 설정하지 않고도 SMS 또는 음성을 통해 디바이스를 제어할 수 있어야합니다. 그러나 Node Red를 사용하고 싶은 경우,`npm install node-red`를 통해 패키지를 설치하고,`node-red`를 통해 편집기를 부팅하고, 아래의 다이어그램과 같은 흐름을 생성할 수 있습니다. 흐름을 연결한 후에는, 각 블록에 인증 신임정보와 엔드포인트를 덧붙여야합니다.
+IBM Cloud Functions에서 시퀀스를 생성하는 방법 대신, 홈오토메이션 로직을 [Node Red](https://github.com/node-red/node-red)를 사용하여 구성할 수 있습니다. Node Red는 사용자가 코드 또는 서비스 호출의 "블록"을 끌어다 놓고 연결할 수 있게함으로써 "흐름"을 조합할 수있는 비주얼 편집기입니다. 이 배포 방식은 노드 서버로 계속해서 실행되므로 서버리스 모델을 적용하지 않을 것입니다. 백엔드 로직은 모두 IBM Cloud Functions 서버리스 액션 풀에 있기 때문에 장기 실행(long running) 서버를 설정하지 않고도 SMS 또는 음성을 통해 디바이스를 제어할 수 있어야합니다. 그러나 Node Red를 사용하고 싶은 경우,`npm install node-red`를 통해 패키지를 설치하고,`node-red`를 통해 편집기를 부팅하고, 아래의 다이어그램과 같은 흐름을 생성할 수 있습니다. 흐름을 연결한 후에는, 각 블록에 인증 신임정보와 엔드포인트를 덧붙여야합니다.
 
 ![Node Red](/images/noderedscreen.png "Architecture")
 <!-- <p align="center">
@@ -192,9 +192,9 @@ Bluemix 구성 요소(음성, 텍스트, 회화 등)가 응답하지 않는 것�
 curl -v -u ${username}:${password} https://stream.watsonplatform.net/speech-to-text/api/v1/models
 ```
 
-Openwhisk:
+IBM Cloud Functions:
 `wsk -vvv action list` 를 보려면, 아무 wsk 명령에 -vv를 추가하십시오.
-또한, [Openwhisk dashboard](https://console.bluemix.net/openwhisk/dashboard) 에서 활동 로그를 확인하십시오
+또한, [IBM Cloud Functions dashboard](https://console.bluemix.net/openwhisk/dashboard) 에서 활동 로그를 확인하십시오
 
 Raspberry Pi:
 `journalctl -ru node-mqtt`를 실행하여 Raspberry Pi의 노드 서버의 stdout 및 stderr 출력을 봅니다.
