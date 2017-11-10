@@ -43,7 +43,7 @@ Next, we'll need to generate an API key to serve as credentials for the MQTT bro
 </p>
 
 
-Take note of the API Key and Authentication Token, as they will be required to access the secure MQTT broker from Openwhisk and the Raspberry Pi. In the cloned repository on the Raspberry Pi, place the credentials in the [node_mqtt.js](node_mqtt.js) file
+Take note of the API Key and Authentication Token, as they will be required to access the secure MQTT broker from IBM Cloud Functions and the Raspberry Pi. In the cloned repository on the Raspberry Pi, place the credentials in the [node_mqtt.js](node_mqtt.js) file
 
 <p align="center">
 <img src="../images/devicecreds.png" data-canonical-src="../images/devicecreds.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
