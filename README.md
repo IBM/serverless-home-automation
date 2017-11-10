@@ -4,7 +4,7 @@
 *View this in other languages: [한국어](README-ko.md).*
 
 ## Overview and goal
-Over the past few years, we’ve seen a significant rise in popularity for intelligent personal assistants, such as Apple’s Siri, Amazon Alexa, and Google Assistant. Though they initially appeared to be little more than a novelty, they’ve evolved to become rather useful as a convenient interface to interact with service APIs and IoT connected devices. This developer pattern will guide users through setting up their own starter home automation hub by using a Raspberry PI to turn power outlets off and on. Once the circuit and software dependencies are installed and configured properly, users will also be able to leverage Watson’s language services to control the power outlets via voice and/or text commands. Furthermore, we’ll show how Openwhisk serverless functions can be leveraged to trigger these sockets based on a timed schedule, changes to the weather, motion sensors being activated, etc.
+Over the past few years, we’ve seen a significant rise in popularity for intelligent personal assistants, such as Apple’s Siri, Amazon Alexa, and Google Assistant. Though they initially appeared to be little more than a novelty, they’ve evolved to become rather useful as a convenient interface to interact with service APIs and IoT connected devices. This developer pattern will guide users through setting up their own starter home automation hub by using a Raspberry PI to turn power outlets off and on. Once the circuit and software dependencies are installed and configured properly, users will also be able to leverage Watson’s language services to control the power outlets via voice and/or text commands. Furthermore, we’ll show how IBM Cloud Functions serverless functions can be leveraged to trigger these sockets based on a timed schedule, changes to the weather, motion sensors being activated, etc.
 
 Click here to view the [IBM Pattern](https://developer.ibm.com/code/patterns/implement-voice-controls-for-serverless-home-automation-hub/) for this project.
 
@@ -18,12 +18,12 @@ You will need the following accounts and tools:
 
 *Architecture flow*
 1.	User says a command into the microphone, or sends a text to the Twilio SMS number
-2.	User input is captured and embedded in an HTTP POST request triggering an Openwhisk sequence
-3.	The first Openwhisk action in the sequence forwards the audio to Speech to Text service, and waits for the response
-4.	Transcription is forwarded to the second Openwhisk action
-5.	Openwhisk action 2 calls the Conversation service to analyze the user's text input, again waits for the response
-6.	Conversation service result is forwarded to final Openwhisk action
-7.	Final openwhisk action publishes a entity/intent pair (fan/turnon for example) to the IoT MQTT broker
+2.	User input is captured and embedded in an HTTP POST request triggering an IBM Cloud Functions sequence
+3.	The first IBM Cloud Functions action in the sequence forwards the audio to Speech to Text service, and waits for the response
+4.	Transcription is forwarded to the second IBM Cloud Functions action
+5.	IBM Cloud Functions action 2 calls the Conversation service to analyze the user's text input, again waits for the response
+6.	Conversation service result is forwarded to final IBM Cloud Functions action
+7.	Final IBM Cloud Functions action publishes a entity/intent pair (fan/turnon for example) to the IoT MQTT broker
 8.	MQTT client subscribed on Raspberry Pi receives and interprets result
 9.	Raspberry Pi transmits corresponding RF signal to adjust outlet state
 
@@ -34,7 +34,7 @@ You will need the following accounts and tools:
   * Install Software Dependencies + Libraries
   * Capture RF codes corresponding to wireless sockets
 - [Provision IBM Cloud Services](#provision-and-configure-platform-services)
-- [Create Serverless Functions](#openwhisk)
+- [Create Serverless Functions](#IBM Cloud Functions)
 - [Deploy to IBM Cloud](#bluemix)
 
 * **Configure Hardware Components**
@@ -98,7 +98,7 @@ source /etc/environment
 /var/www/rfoutlet/codesend ${RF_PLUG_OFF_1} -l ${RF_PLUG_OFF_PULSE_1}
 ```
 
-Now that we can control the sockets manually via cli, we’ll move forward and experiment with different ways to control them in an automated fashion. Rather than writing and executing pipelines and complex automation logic on the Raspberry Pi, we’ll utilize a serverless, event driven platform called Openwhisk. In this implementation, Openwhisk actions communicate with the Raspberry Pi via MQTT messages.
+Now that we can control the sockets manually via cli, we’ll move forward and experiment with different ways to control them in an automated fashion. Rather than writing and executing pipelines and complex automation logic on the Raspberry Pi, we’ll utilize a serverless, event driven platform called IBM Cloud Functions. In this implementation, IBM Cloud Functions actions communicate with the Raspberry Pi via MQTT messages.
 
 * **Audio Interface**
 
@@ -110,7 +110,7 @@ Once the Raspberry Pi is setup, we'll need to configure it to recognize audio in
 - [Speech to Text](https://console.bluemix.net/catalog/services/speech-to-text)
 - [Watson IoT Platform](https://console.bluemix.net/catalog/services/internet-of-things-platform)
 - [Twilio](https://console.bluemix.net/catalog/services/twilio)
-<!-- - [Openwhisk](https://console.bluemix.net/openwhisk) -->
+<!-- - [IBM Cloud Functions](https://console.bluemix.net/openwhisk) -->
 
 A IBM Cloud Account is required to provision these services. After logging in, simply navigate to each of the links above, and select the "Create Service" button.
 
@@ -127,13 +127,13 @@ The [Conversation](https://www.ibm.com/watson/developercloud/conversation.html) 
 
 The Watson IoT Platform will be utilized as a MQTT messaging broker. This is a lightweight publish/subscribe messaging protocol that'll allow for various devices such as a Phone, Laptop, and Microphone to communicate with the Raspberry Pi. Once this service has been provisioned, we'll need to generate a set of credentials to securely access the MQTT broker. These steps are listed [here](./iot-gateway/)
 
-* **Openwhisk**
+* **IBM Cloud Functions**
 
-Rather than writing and executing pipelines and complex automation logic on the Raspberry Pi, we’ll utilize a serverless, event driven platform called [Openwhisk](https://console.ng.bluemix.net/openwhisk). In this implementation, Openwhisk actions forward their results  to the Raspberry Pi as MQTT messages. Openwhisk is a serverless framework which has the ability to bind snippets of code to REST API endpoints. Once these have been created, they can be executed directly from any internet connected device, or they can respond to events such as a database change or a message coming in to a specific MQTT channel. Once these snippets, or "Actions" have been created, they may be chained together as a sequence, as seen above in the architecture diagram.
+Rather than writing and executing pipelines and complex automation logic on the Raspberry Pi, we’ll utilize a serverless, event driven platform called [IBM Cloud Functions](https://console.ng.bluemix.net/openwhisk). In this implementation, IBM Cloud Functions actions forward their results  to the Raspberry Pi as MQTT messages. IBM Cloud Functions is a serverless framework which has the ability to bind snippets of code to REST API endpoints. Once these have been created, they can be executed directly from any internet connected device, or they can respond to events such as a database change or a message coming in to a specific MQTT channel. Once these snippets, or "Actions" have been created, they may be chained together as a sequence, as seen above in the architecture diagram.
 
 To get started, we will create a sequence that consists of three actions. The first action will transcribe an audio payload to text. The second action will analyze the transcribed text result using the Conversation service. This analysis will extract the intent behind the spoken message, and determine what the user would like the Raspberry Pi to do. So, for example, if the user says something along the line of “Turn on the light” or “Flip the switch”, the NLC service will be able to interpret that. Finally, the third action will send a MQTT message that’ll notify the Raspberry Pi to switch the socket on/off.
 
-The speech to text action is already built in to Openwhisk as a public package, so we’ll just need to supply our credentials for that service. Moving forward, we can create the additional actions with the following commands.
+The speech to text action is already built in to IBM Cloud Functions as a public package, so we’ll just need to supply our credentials for that service. Moving forward, we can create the additional actions with the following commands.
 
 ```
 cd serverless-home-automation/iot_gateway/whisk_actions
@@ -172,9 +172,9 @@ sudo systemctl status node-mqtt
 
 * **Twilio**
 
-Twilio is a service that enables developers to integrate VoIP and SMS capabilities into their platform. This works by allowing developers to choose a phone number to register. Once registered, Twilio exposes an API endpoint to allow calls and texts to be made programmatically from the number. Also, the number can be configured to respond to incoming calls/texts by either triggering a webhook or following a [Twiml](https://www.twilio.com/docs/api/twiml) document. In this case, we'll configure the Twilio number to respond to incoming texts by triggering a webhook bound to the "homeSequence" Openwhisk action we created in the previous step. We can find the url to the webhook by navigating to the [Openwhisk console](https://console.bluemix.net/openwhisk/editor), selecting the homeSequence sequence, and then selecting the "View Action Details" button. Finally, check the "Enable as Web Action" button, and copy the generated Web Action URL.
+Twilio is a service that enables developers to integrate VoIP and SMS capabilities into their platform. This works by allowing developers to choose a phone number to register. Once registered, Twilio exposes an API endpoint to allow calls and texts to be made programmatically from the number. Also, the number can be configured to respond to incoming calls/texts by either triggering a webhook or following a [Twiml](https://www.twilio.com/docs/api/twiml) document. In this case, we'll configure the Twilio number to respond to incoming texts by triggering a webhook bound to the "homeSequence" IBM Cloud Functions action we created in the previous step. We can find the url to the webhook by navigating to the [IBM Cloud Functions console](https://console.bluemix.net/openwhisk/editor), selecting the homeSequence sequence, and then selecting the "View Action Details" button. Finally, check the "Enable as Web Action" button, and copy the generated Web Action URL.
 
-To get started, please visit Twilio's registration [page](https://www.twilio.com/try-twilio). After signing up, log in and select the # icon in the menu, which will direct the browser to the [Phone Numbers](https://www.twilio.com/console/phone-numbers/incoming) configuration. Now, select the circular + button to select and register a number. After registration, click the number to configure it. Scrolling down will reveal a "Messaging" section. In the form titled "A Message Comes in", paste the webhook associated with the "homeSequence" Openwhisk action, as seen below.
+To get started, please visit Twilio's registration [page](https://www.twilio.com/try-twilio). After signing up, log in and select the # icon in the menu, which will direct the browser to the [Phone Numbers](https://www.twilio.com/console/phone-numbers/incoming) configuration. Now, select the circular + button to select and register a number. After registration, click the number to configure it. Scrolling down will reveal a "Messaging" section. In the form titled "A Message Comes in", paste the webhook associated with the "homeSequence" IBM Cloud Functions action, as seen below.
 
 <p align="center">
 <img src="./images/configure_messaging_generic.png" data-canonical-src="./images/createdevicetype.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
@@ -182,7 +182,7 @@ To get started, please visit Twilio's registration [page](https://www.twilio.com
 
 * **Node Red**
 
-As an alternative to creating sequences in Openwhisk, the home automation logic can be arranged using [Node Red](https://github.com/node-red/node-red). Node Red is a visual editor capable of assembling "flows", which is done by allowing users to drag, drop and connect "blocks" of code or service calls. It's worth noting that this deplyment scheme won't follow a fully serverless model, as it'll be running constantly as a node server. Since the backend logic is all in the Openwhisk serverless action pool, the devices should be able to be controlled via SMS or voice without having to set up a long running server. However, in use cases where it's preferable to use node red, we can do so by installing the package via `npm install node-red`, booting up the editor via `node-red`, and creating a flow like what we have in the diagram below. After assembling the flow, be sure to populate the authentication credentials and endpoint for each block.
+As an alternative to creating sequences in IBM Cloud Functions, the home automation logic can be arranged using [Node Red](https://github.com/node-red/node-red). Node Red is a visual editor capable of assembling "flows", which is done by allowing users to drag, drop and connect "blocks" of code or service calls. It's worth noting that this deplyment scheme won't follow a fully serverless model, as it'll be running constantly as a node server. Since the backend logic is all in the IBM Cloud Functions serverless action pool, the devices should be able to be controlled via SMS or voice without having to set up a long running server. However, in use cases where it's preferable to use node red, we can do so by installing the package via `npm install node-red`, booting up the editor via `node-red`, and creating a flow like what we have in the diagram below. After assembling the flow, be sure to populate the authentication credentials and endpoint for each block.
 
 ![Node Red](/images/noderedscreen.png "Architecture")
 <!-- <p align="center">
@@ -207,9 +207,9 @@ Whenever any of the IBM Cloud components (Speech to Text, Conversation, etc) see
 curl -v -u ${username}:${password} https://stream.watsonplatform.net/speech-to-text/api/v1/models
 ```
 
-Openwhisk:
+IBM Cloud Functions:
 Add -vv to any wsk command `wsk -vvv action list` to view the
-Also, check the activity log in the [Openwhisk dashboard](https://console.bluemix.net/openwhisk/dashboard)
+Also, check the activity log in the [IBM Cloud Functions dashboard](https://console.bluemix.net/openwhisk/dashboard)
 
 Raspberry Pi:
 Run `journalctl -ru node-mqtt` to view the stdout and stderr output of the Raspberry Pi's node server
