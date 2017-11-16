@@ -11,7 +11,7 @@ Click here to view the [IBM Pattern](https://developer.ibm.com/code/patterns/imp
 ## Prerequisites
 You will need the following accounts and tools:
 * [IBM Cloud account](https://console.ng.bluemix.net/registration/)
-* [Bluemix CLI](https://console.bluemix.net/docs/cli/reference/bluemix_cli/index.html#getting-started)
+* [IBM Cloud CLI](https://console.bluemix.net/docs/cli/reference/bluemix_cli/all_versions.html#ibm-cloud-cli-installer-all-versions)
 * [Openwhisk CLI](https://github.com/apache/incubator-openwhisk-cli/releases)
 
 ### Architecture
@@ -138,7 +138,7 @@ The speech to text action is already built in to IBM Cloud Functions as a public
 ```
 cd serverless-home-automation/iot_gateway/whisk_actions
 wsk action create conversation conversation.js
-wsk action create parser-python parser-python.py
+wsk action create iot-pub iot-pub.py
 ```
 
 Once the actions are successfully created, we can set default service credentials for each of the actions. Otherwise we’d have to pass in the service credentials every time we’d like our actions to call the Watson services. To obtain these credentials, click each provisioned service in the IBM Cloud dashboard, and then select the “View credentials” dropdown.
@@ -151,13 +151,13 @@ Then insert the corresponding credentials when running the commands below.
 
 ```
 wsk action update conversation -p username ${conversation_username} -p password ${conversation_password} -p workspace_id ${conversation_workspace_id}
-wsk action update parser-python -p org ${iot_org_id} -p device_id ${device_id} -p api_token ${api_token}
+wsk action update iot-pub -p org ${iot_org_id} -p device_id ${device_id} -p api_token ${api_token}
 wsk package bind /whisk.system/watson-speechToText myWatsonSpeechToText -p username ${stt_username} -p password ${stt_password}
 ```
 
 Next, we can arrange the actions into a sequence
 ```
-wsk action create homeSequence --sequence /myWatsonSpeechToText/speechToText,conversation,parser-python
+wsk action create homeSequence --sequence /myWatsonSpeechToText/speechToText,conversation,iot-pub
 ```
 
 <!-- TODO, update node server with multi devices from Pi -->

@@ -125,7 +125,7 @@ Speech to text 액션은 OpenWisk에 공개 패키지로 이미 들어 있으므
 ```
 cd serverless-home-automation/iot_gateway/whisk_actions
 wsk action create conversation conversation.js
-wsk action create parser-python parser-python.py
+wsk action create iot-pub iot-pub.py
 ```
 
 액션이 성공적으로 수행되면 각 작업에 대한 기본 서비스 신임정보를 설정할 수 있습니다. 그렇지 않으면, 액션에서 Watson 서비스를 호출할 때마다 서비스 신임정보를 전달해야 합니다. 이러한 신임정보를 얻으려면 Bluemix 대시보드에서 제공된 각 서비스를 클릭한 다음 "신임정보 보기"를 클릭하십시오.
@@ -138,13 +138,13 @@ wsk action create parser-python parser-python.py
 
 ```
 wsk action update conversation -p username ${conversation_username} -p password ${conversation_password} -p workspace_id ${conversation_workspace_id}
-wsk action update parser-python -p org ${iot_org_id} -p device_id ${device_id} -p api_token ${api_token}
+wsk action update iot-pub -p org ${iot_org_id} -p device_id ${device_id} -p api_token ${api_token}
 wsk package bind /whisk.system/watson-speechToText myWatsonSpeechToText -p username ${stt_username} -p password ${stt_password}
 ```
 
 다음으로, 액션을 시퀀스로 배열할 수 있습니다.
 ```
-wsk action create homeSequence --sequence /myWatsonSpeechToText/speechToText,conversation,parser-python
+wsk action create homeSequence --sequence /myWatsonSpeechToText/speechToText,conversation,iot-pub
 ```
 
 <!-- TODO, update node server with multi devices from Pi -->
