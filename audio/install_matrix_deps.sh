@@ -5,7 +5,9 @@ sudo apt-get -y install build-essential git-core sox alsa-utils curl cmake wget
 
 # Update .asoundrc file
 cp ~/.asoundrc ~/.asoundrc.bak
-wget https://raw.githubusercontent.com/IBM/serverless-home-automation/master/audio_interface/.asoundrc.matrix -P ~/.asoundrc
+wget https://raw.githubusercontent.com/IBM/serverless-home-automation/master/audio/.asoundrc.matrix -P ~/ #.asoundrc
+mv ~/.asoundrc.matrix ~/.asoundrc
+
 
 # Clone matrix repository
 git clone https://github.com/matrix-io/matrix-creator-hal.git
