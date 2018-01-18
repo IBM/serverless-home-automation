@@ -5,7 +5,7 @@ sudo apt-get -y install git-core build-essential python-setuptools python-pyaudi
 sudo easy_install pip
 touch ~/.asoundrc
 cp ~/.asoundrc ~/.asoundrc.bak
-cp ../recording-device/.asoundrc ~/.asoundrc
+cp ../audio_interface/.asoundrc ~/.asoundrc
 
 ## Swig
 sudo apt-get -y install libpcre3 libpcre3-dev autoconf

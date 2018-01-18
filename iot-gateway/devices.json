@@ -1,0 +1,55 @@
+{
+  "devices": [
+    {
+      "location": "kitchen",
+      "class": "light",
+      "controlType": {
+        "rf": {
+          "config": {
+            "on": "",
+            "off": ""
+          }
+        }
+      }
+    },
+    {
+      "location": "bedroom",
+      "class": "blinds",
+      "controlType": {
+        "rf": {
+          "config": {
+            "lower": "",
+            "higher": ""
+          }
+        }
+      }
+    },
+    {
+      "location": "bedroom",
+      "name": "samsung_bedroom",
+      "class": "television",
+      "CEC": true,
+      "states": {
+        "power": "off",
+        "channel": "302"
+      },
+      "controlType": {
+        "ir": {
+          "config": {
+            "lirc": "samsung_bedroom.conf"
+          }
+        }
+      }
+    },
+    {
+      "location": "bedroom",
+      "class": "media_player",
+      "controlType": {
+        "cast": {
+          "name": "chromecast"
+        }
+      },
+      "belongs_to": "samsung_bedroom"
+    }
+  ]
+}
