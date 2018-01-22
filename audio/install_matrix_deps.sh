@@ -1,7 +1,7 @@
 # Install dependencies
 sudo apt-get -y update
 sudo apt-get -y upgrade
-sudo apt-get -y install build-essential git-core sox alsa-utils curl cmake wget
+sudo apt-get -y install build-essential git-core sox alsa-utils curl wget cmake g++ git libfftw3-dev wiringpi libgflags-dev
 
 # Update .asoundrc file
 cp ~/.asoundrc ~/.asoundrc.bak
