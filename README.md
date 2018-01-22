@@ -61,7 +61,7 @@ The red wire just left of the breakout board is responsible for bridging 5 volts
 
 Once the Raspberry Pi is connected to the circuit, we'll need to install dependencies to allow us to interact with the RF transmitter and receiver. This can be accomplished by running the [install_deps.sh](./iot-gateway/install_deps.sh) script.
 
-The open source libaries that are being installed here are [wiringPi](http://wiringpi.com/) and [433Utils](https://github.com/ninjablocks/433Utils). wiringPi enables applications to read/control the Raspberry Pi’s GPIO pins. 433Utils calls the wiringPi library to transmit and receive messages via the 433MHz frequency. In our case, each outlet has a unique RF code to turn power on and off. We’ll use one of the wiringPi utilities, titled “RFSniffer” to essentially register each of these unique codes. The 433MHz frequency is standard among many common devices such as garage door openers, thermostats, window/door sensors, car keys, etc. So this initial setup is not limited to only controlling power outlets.
+The open source libraries that are being installed here are [wiringPi](http://wiringpi.com/) and [433Utils](https://github.com/ninjablocks/433Utils). wiringPi enables applications to read/control the Raspberry Pi’s GPIO pins. 433Utils calls the wiringPi library to transmit and receive messages via the 433MHz frequency. In our case, each outlet has a unique RF code to turn power on and off. We’ll use one of the wiringPi utilities, titled “RFSniffer” to essentially register each of these unique codes. The 433MHz frequency is standard among many common devices such as garage door openers, thermostats, window/door sensors, car keys, etc. So this initial setup is not limited to only controlling power outlets.
 
 Once the script completes run `gpio readall` to ensure that wiringPi installed successfully. The following chart should be displayed.
 <p align="center">
@@ -82,7 +82,7 @@ Received 5528844
 Received pulse 191
 ```
 
-After determining the on/off signal for the RF sockets, place the captured signals into the /etc/environment file like so.
+After determining the on/off signal for the RF sockets, place the captured signals into the `/etc/environment` file like so.
 ```
 RF_PLUG_ON_1=5528835
 RF_PLUG_ON_PULSE_1=190
@@ -90,7 +90,7 @@ RF_PLUG_OFF_1=5528844
 RF_PLUG_OFF_PULSE_1=191
 ```
 
-Now, plug in the associated socket, and run the following command to ensure the Raspberry Pi can turn the socket on and off. This command simply sends the RF code at the requested pulse length, which is to be provided as the -l parameter.
+Now, plug in the associated socket, and run the following command to ensure the Raspberry Pi can turn the socket on and off. This command simply sends the RF code at the requested pulse length, which is to be provided as the `-l` parameter.
 
 ```
 source /etc/environment
@@ -141,7 +141,7 @@ wsk action create conversation conversation.js
 wsk action create iot-pub iot-pub.py
 ```
 
-Once the actions are successfully created, we can set default service credentials for each of the actions. Otherwise we’d have to pass in the service credentials every time we’d like our actions to call the Watson services. To obtain these credentials, click each provisioned service in the IBM Cloud dashboard, and then select the “View credentials” dropdown.
+Once the actions are successfully created, we can set default service credentials for each of the actions. Otherwise we’d have to pass in the service credentials every time we’d like our actions to call the Watson services. To obtain these credentials, click each provisioned service in the IBM Cloud dashboard, and then select the `View credentials` dropdown.
 
 <p align="center">
 <img src="/images/stt_creds.png" data-canonical-src="/images/stt_creds.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
@@ -160,8 +160,8 @@ Next, we can arrange the actions into a sequence
 wsk action create homeSequence --sequence /myWatsonSpeechToText/speechToText,conversation,iot-pub
 ```
 
-<!-- TODO, update node server with multi devices from Pi -->
-For the sequence to be able to return the result to the Raspberry Pi, a MQTT client will need to be listening to the Watson IoT service. If the proper values have been set in the /etc/environment file, you should just have to run the following commands to create and enable a systemd service, which will automatically start on boot. This will start the [node server](./iot-gateway/node-mqtt.js), which subscribes to the Watson IoT Platform's MQTT broker and listens for intent entity pairs.
+<!-- TODO, update node server with multi-devices from Pi -->
+For the sequence to be able to return the result to the Raspberry Pi, a MQTT client will need to be listening to the Watson IoT service. If the proper values have been set in the `/etc/environment` file, you should just have to run the following commands to create and enable a systemd service, which will automatically start on boot. This will start the [node server](./iot-gateway/node-mqtt.js), which subscribes to the Watson IoT Platform's MQTT broker and listens for intent entity pairs.
 
 ```
 sudo cp serverless-home-automation/iot-gateway/node-mqtt.service /etc/systemd/system/
@@ -172,9 +172,9 @@ sudo systemctl status node-mqtt
 
 * **Twilio**
 
-Twilio is a service that enables developers to integrate VoIP and SMS capabilities into their platform. This works by allowing developers to choose a phone number to register. Once registered, Twilio exposes an API endpoint to allow calls and texts to be made programmatically from the number. Also, the number can be configured to respond to incoming calls/texts by either triggering a webhook or following a [Twiml](https://www.twilio.com/docs/api/twiml) document. In this case, we'll configure the Twilio number to respond to incoming texts by triggering a webhook bound to the "homeSequence" IBM Cloud Functions action we created in the previous step. We can find the url to the webhook by navigating to the [IBM Cloud Functions console](https://console.bluemix.net/openwhisk/editor), selecting the homeSequence sequence, and then selecting the "View Action Details" button. Finally, check the "Enable as Web Action" button, and copy the generated Web Action URL.
+Twilio is a service that enables developers to integrate VoIP and SMS capabilities into their platform. This works by allowing developers to choose a phone number to register. Once registered, Twilio exposes an API endpoint to allow calls and texts to be made programmatically from the number. Also, the number can be configured to respond to incoming calls/texts by either triggering a webhook or following a [Twiml](https://www.twilio.com/docs/api/twiml) document. In this case, we'll configure the Twilio number to respond to incoming texts by triggering a webhook bound to the "homeSequence" IBM Cloud Functions action we created in the previous step. We can find the url to the webhook by navigating to the [IBM Cloud Functions console](https://console.bluemix.net/openwhisk/editor), selecting the homeSequence sequence, and then selecting the `View Action Details` button. Finally, check the `Enable as Web Action` button, and copy the generated Web Action URL.
 
-To get started, please visit Twilio's registration [page](https://www.twilio.com/try-twilio). After signing up, log in and select the # icon in the menu, which will direct the browser to the [Phone Numbers](https://www.twilio.com/console/phone-numbers/incoming) configuration. Now, select the circular + button to select and register a number. After registration, click the number to configure it. Scrolling down will reveal a "Messaging" section. In the form titled "A Message Comes in", paste the webhook associated with the "homeSequence" IBM Cloud Functions action, as seen below.
+To get started, please visit Twilio's registration [page](https://www.twilio.com/try-twilio). After signing up, log in and select the `#` icon in the menu, which will direct the browser to the [Phone Numbers](https://www.twilio.com/console/phone-numbers/incoming) configuration. Now, select the circular `+` button to select and register a number. After registration, click the number to configure it. Scrolling down will reveal a `Messaging` section. In the form titled `A Message Comes in`, paste the webhook associated with the "homeSequence" IBM Cloud Functions action, as seen below.
 
 <p align="center">
 <img src="./images/configure_messaging_generic.png" data-canonical-src="./images/createdevicetype.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
@@ -182,7 +182,7 @@ To get started, please visit Twilio's registration [page](https://www.twilio.com
 
 * **Node Red**
 
-As an alternative to creating sequences in IBM Cloud Functions, the home automation logic can be arranged using [Node Red](https://github.com/node-red/node-red). Node Red is a visual editor capable of assembling "flows", which is done by allowing users to drag, drop and connect "blocks" of code or service calls. It's worth noting that this deplyment scheme won't follow a fully serverless model, as it'll be running constantly as a node server. Since the backend logic is all in the IBM Cloud Functions serverless action pool, the devices should be able to be controlled via SMS or voice without having to set up a long running server. However, in use cases where it's preferable to use node red, we can do so by installing the package via `npm install node-red`, booting up the editor via `node-red`, and creating a flow like what we have in the diagram below. After assembling the flow, be sure to populate the authentication credentials and endpoint for each block.
+As an alternative to creating sequences in IBM Cloud Functions, the home automation logic can be arranged using [Node Red](https://github.com/node-red/node-red). Node Red is a visual editor capable of assembling "flows", which is done by allowing users to drag, drop and connect "blocks" of code or service calls. It's worth noting that this deployment scheme won't follow a fully serverless model, as it'll be running constantly as a node server. Since the backend logic is all in the IBM Cloud Functions serverless action pool, the devices should be able to be controlled via SMS or voice without having to set up a long running server. However, in use cases where it's preferable to use node red, we can do so by installing the package via `npm install node-red`, booting up the editor via `node-red`, and creating a flow like what we have in the diagram below. After assembling the flow, be sure to populate the authentication credentials and endpoint for each block.
 
 ![Node Red](/images/noderedscreen.png "Architecture")
 <!-- <p align="center">
@@ -202,13 +202,13 @@ RF Circuit:
 After checking each of the wires to ensure they are lined up correctly, use a [multimeter](https://learn.sparkfun.com/tutorials/how-to-use-a-multimeter) to check each of the connection nodes starting from the power source. For example, to ensure that RF components are being powered properly, touch the negative/grounded end of the multimeter to the grounded power rail, and touch the positive end of the multimeter to the RF components 5V pin.
 
 IBM Cloud Services:
-Whenever any of the IBM Cloud components (Speech to Text, Conversation, etc) seem to be unresponsive, check the [IBM Cloud Status page](https://status.ng.bluemix.net/) to see if the service is down or under maintenence. If not, try running a sample request using curl and ensure that a 200 HTTP response is returned. A sample request against the speech-to-text service would look like so.
+Whenever any of the IBM Cloud components (Speech to Text, Conversation, etc) seem to be unresponsive, check the [IBM Cloud Status page](https://status.ng.bluemix.net/) to see if the service is down or under maintenance. If not, try running a sample request using curl and ensure that a 200 HTTP response is returned. A sample request against the speech-to-text service would look like so.
 ```
 curl -v -u ${username}:${password} https://stream.watsonplatform.net/speech-to-text/api/v1/models
 ```
 
 IBM Cloud Functions:
-Add -vv to any wsk command `wsk -vvv action list` to view the
+Add `-vv` to any wsk command `wsk -vvv action list` to view the 
 Also, check the activity log in the [IBM Cloud Functions dashboard](https://console.bluemix.net/openwhisk/dashboard)
 
 Raspberry Pi:
@@ -246,7 +246,7 @@ This web application includes code to track deployments to [IBM Cloud](https://w
 * Node-RED package version
 * Labels of bound services
 * Number of instances for each bound service and associated plan information
-* Metadata in the repository.yaml file
+* Metadata in the `repository.yaml` file
 
 This data is collected from the `package.json` and `repository.yaml` file in the sample application and the `VCAP_APPLICATION` and `VCAP_SERVICES` environment variables in IBM Cloud and other Cloud Foundry platforms. This data is used by IBM to track metrics around deployments of sample applications to IBM Cloud to measure the usefulness of our examples, so that we can continuously improve the content we offer to you. Only deployments of sample applications that include code to ping the Deployment Tracker service will be tracked.
 
