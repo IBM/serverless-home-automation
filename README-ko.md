@@ -12,8 +12,8 @@
 2.	해당 명령이 캡처되어 IBM Cloud Functions 시퀀스를 트리거하는 HTTP POST 요청에 임베드됩니다
 3.	IBM Cloud Functions 액션 1은 오디오를 Bluemix Speech to Text 서비스로 전달하고 응답을 기다립니다
 4.	텍스트화된 명령은 IBM Cloud Functions 액션 2로 전달됩니다
-5.	IBM Cloud Functions 액션 2는 Assistant 서비스를 호출하여 사용자의 텍스트 명령을 분석한 다음 응답을 기다립니다
-6.	Assistant 서비스 결과는 최종 IBM Cloud Functions 액션으로 전달됩니다
+5.	IBM Cloud Functions 액션 2는 Watson Assistant 서비스를 호출하여 사용자의 텍스트 명령을 분석한 다음 응답을 기다립니다
+6.	Watson Assistant 서비스 결과는 최종 IBM Cloud Functions 액션으로 전달됩니다
 7.	IBM Cloud Functions 액션은 IoT MQTT 브로커에 엔티티 / 인텐트 페어(예 : "fan / turnon")를 게시합니다
 8.	MQTT 브로커에 등록된 Raspberry Pi는 결과를 수신합니다
 9.	Raspberry Pi는 RF 신호를 전송하여 콘센트를 켜거나 끕니다
@@ -109,7 +109,7 @@ source /etc/environment
 <img src="/images/service_create.png" data-canonical-src="/images/service_create.png" width="700" height="450" style="margin-left: auto; margin-right: auto;" />
 </p>
 
-### Assistant
+### Watson Assistant
 [Watson Assistant](https://www.ibm.com/watson/developercloud/conversation.html) 서비스는 자연어를 분석하고 사용자 입력을 기반으로 수행할 액션을 결정합니다. 여기에는 두 가지 주요 개념이 있습니다. 첫째는 "Intents"(의도)인데, 이는 사용자가 응용 프로그램을 수행할 내용을 결정합니다. 둘째는 "Entities"인데 intents(의도)가 어디에 적용되어야 하는지에 대한 컨텍스트를 제공합니다. 이 예제에서는 간단한 두 가지 intents(의도)가 있습니다. 하나는 "끄다"이고, 다른 하나는 "켜다"입니다. 그리고 3 개의 entities(엔티티)를 가지고 있습니다. 이 경우 엔티티는 켜고 끄기를 원하는 가정용 디바이스입니다. 이 사전교육된 데이터 모델은 UI를 통해 프로비저닝된 Coversation 서비스에 업로드할 수 있습니다. 업로드를 시작하려면 Bluemix에 로그인하십시오. 그런 다음 대화 서비스를 선택한 다음 "Launch Tool"버튼을 선택하십시오.
 
 ### Watson IoT Platform
@@ -118,7 +118,7 @@ Watson IoT Platform은 MQTT 메시징 브로커로 활용됩니다. 이것은 �
 ### IBM Cloud Functions
 Raspberry Pi에서 파이프라인 및 복잡한 자동화 로직을 작성하고 실행하는 대신 서버리스 이벤트 기반 플랫폼인 [IBM Cloud Functions](https://console.ng.bluemix.net/openwhisk) 를 활용할 것입니다. IBM Cloud Functions 액션은 결과를 MQTT 메시지로 Raspberry Pi에 전달합니다. IBM Cloud Functions는 코드 스니펫을 REST API 엔드 포인트에 바인딩할 수 있는 서버리스 프레임워크입니다. 일단 작성되면 인터넷에 연결된 모든 디바이스에서 직접 실행하거나 데이터베이스 변경 또는 특정 MQTT 채널로 들어오는 메시지와 같은 이벤트에 응답할 수 있습니다. 이러한 스니펫 또는 "액션"이 생성되면 위의 아키텍처 다이어그램과 같이 시퀀스로 함께 연결될 수 있습니다.
 
-우선, 세 가지 액션으로 구성된 시퀀스를 만듭니다. 첫 번째 액션은 오디오 페이로드를 텍스트로 변환합니다. 두 번째 액션은 Assistant 서비스를 사용하여 문자 메시지 결과를 분석합니다. 이 분석은 음성 메시지의 의도를 추출하고, Raspberry Pi가 무엇을 하길 사용자가 원한 것인지에 대해 결정합니다. 예를 들어, 사용자가 "전등 켜기"또는 "스위치 누르기"의 행을 따라 뭔가를 말하면 NLC 서비스가 이를 해석할 수 있습니다. 마지막으로, 세 번째 액션은 MQTT 메시지를 보내서 Raspberry Pi에게 소켓을 켜고 끌 것을 알립니다
+우선, 세 가지 액션으로 구성된 시퀀스를 만듭니다. 첫 번째 액션은 오디오 페이로드를 텍스트로 변환합니다. 두 번째 액션은 Watson Assistant 서비스를 사용하여 문자 메시지 결과를 분석합니다. 이 분석은 음성 메시지의 의도를 추출하고, Raspberry Pi가 무엇을 하길 사용자가 원한 것인지에 대해 결정합니다. 예를 들어, 사용자가 "전등 켜기"또는 "스위치 누르기"의 행을 따라 뭔가를 말하면 NLC 서비스가 이를 해석할 수 있습니다. 마지막으로, 세 번째 액션은 MQTT 메시지를 보내서 Raspberry Pi에게 소켓을 켜고 끌 것을 알립니다
 
 Speech to text 액션은 OpenWisk에 공개 패키지로 이미 들어 있으므로 해당 서비스에 대한 신임정보를 제공하면 됩니다. 향후에는 다음 명령을 사용하여 추가 작업을 진행할 수 있습니다.
 
