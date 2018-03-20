@@ -21,8 +21,8 @@ You will need the following accounts and tools:
 2.	User input is captured and embedded in an HTTP POST request triggering an IBM Cloud Functions sequence
 3.	The first IBM Cloud Functions action in the sequence forwards the audio to Speech to Text service, and waits for the response
 4.	Transcription is forwarded to the second IBM Cloud Functions action
-5.	IBM Cloud Functions action 2 calls the Assistant for Business service to analyze the user's text input, again waits for the response
-6.	Assistant for Business service result is forwarded to final IBM Cloud Functions action
+5.	IBM Cloud Functions action 2 calls the Assistant service to analyze the user's text input, again waits for the response
+6.	Assistant service result is forwarded to final IBM Cloud Functions action
 7.	Final IBM Cloud Functions action publishes a entity/intent pair (fan/turnon for example) to the IoT MQTT broker
 8.	MQTT client subscribed on Raspberry Pi receives and interprets result
 9.	Raspberry Pi transmits corresponding RF signal to adjust outlet state
@@ -106,7 +106,7 @@ Once the Raspberry Pi is setup, we'll need to configure it to recognize audio in
 
 * **Provision and Configure Platform Services**
 
-- [Assistant for Business](https://console.bluemix.net/catalog/services/conversation)
+- [Watson Assistant](https://console.bluemix.net/catalog/services/conversation)
 - [Speech to Text](https://console.bluemix.net/catalog/services/speech-to-text)
 - [Watson IoT Platform](https://console.bluemix.net/catalog/services/internet-of-things-platform)
 - [Twilio](https://console.bluemix.net/catalog/services/twilio)
@@ -119,9 +119,9 @@ A IBM Cloud Account is required to provision these services. After logging in, s
 <img src="/images/service_create.png" data-canonical-src="/images/service_create.png" width="700" height="450" style="margin-left: auto; margin-right: auto;" />
 </p>
 
-* **Assistant for Business**
+* **Assistant**
 
-The [Assistant for Business](https://www.ibm.com/watson/developercloud/conversation.html) service is used to analyze natural language and determine which action(s) to take based on the user input. There are two main concepts to understand here. The first are referred to as "Intents", which determine what the user would like the application to do. Next, we have "Entities", which provide context of where the intent should be applied. To keep things simple, we have two intents, one is titled "turnoff", the other "turnon". Next, we have 3 entities, which are household devices that we'd like to turn off and on in this case. This pre-trained data model can be uploaded to the provisioned Assistant for Business service through the UI. To initiate the upload, login to the IBM Cloud console. Next select the conversation service, and then the button titled "Launch Tool".
+The [Watson Assistant](https://www.ibm.com/watson/developercloud/conversation.html) service is used to analyze natural language and determine which action(s) to take based on the user input. There are two main concepts to understand here. The first are referred to as "Intents", which determine what the user would like the application to do. Next, we have "Entities", which provide context of where the intent should be applied. To keep things simple, we have two intents, one is titled "turnoff", the other "turnon". Next, we have 3 entities, which are household devices that we'd like to turn off and on in this case. This pre-trained data model can be uploaded to the provisioned Assistant service through the UI. To initiate the upload, login to the IBM Cloud console. Next select the Watson Assistant service, and then the button titled "Launch Tool".
 
 * **Watson IoT Platform**
 
@@ -131,7 +131,7 @@ The Watson IoT Platform will be utilized as a MQTT messaging broker. This is a l
 
 Rather than writing and executing pipelines and complex automation logic on the Raspberry Pi, we’ll utilize a serverless, event driven platform called [IBM Cloud Functions](https://console.ng.bluemix.net/openwhisk). In this implementation, IBM Cloud Functions actions forward their results  to the Raspberry Pi as MQTT messages. IBM Cloud Functions is a serverless framework which has the ability to bind snippets of code to REST API endpoints. Once these have been created, they can be executed directly from any internet connected device, or they can respond to events such as a database change or a message coming in to a specific MQTT channel. Once these snippets, or "Actions" have been created, they may be chained together as a sequence, as seen above in the architecture diagram.
 
-To get started, we will create a sequence that consists of three actions. The first action will transcribe an audio payload to text. The second action will analyze the transcribed text result using the Assistant for Business service. This analysis will extract the intent behind the spoken message, and determine what the user would like the Raspberry Pi to do. So, for example, if the user says something along the line of “Turn on the light” or “Flip the switch”, the NLC service will be able to interpret that. Finally, the third action will send a MQTT message that’ll notify the Raspberry Pi to switch the socket on/off.
+To get started, we will create a sequence that consists of three actions. The first action will transcribe an audio payload to text. The second action will analyze the transcribed text result using the Assistant service. This analysis will extract the intent behind the spoken message, and determine what the user would like the Raspberry Pi to do. So, for example, if the user says something along the line of “Turn on the light” or “Flip the switch”, the NLC service will be able to interpret that. Finally, the third action will send a MQTT message that’ll notify the Raspberry Pi to switch the socket on/off.
 
 The speech to text action is already built in to IBM Cloud Functions as a public package, so we’ll just need to supply our credentials for that service. Moving forward, we can create the additional actions with the following commands.
 
@@ -202,7 +202,7 @@ RF Circuit:
 After checking each of the wires to ensure they are lined up correctly, use a [multimeter](https://learn.sparkfun.com/tutorials/how-to-use-a-multimeter) to check each of the connection nodes starting from the power source. For example, to ensure that RF components are being powered properly, touch the negative/grounded end of the multimeter to the grounded power rail, and touch the positive end of the multimeter to the RF components 5V pin.
 
 IBM Cloud Services:
-Whenever any of the IBM Cloud components (Speech to Text, Assistant for Business, etc) seem to be unresponsive, check the [IBM Cloud Status page](https://status.ng.bluemix.net/) to see if the service is down or under maintenance. If not, try running a sample request using curl and ensure that a 200 HTTP response is returned. A sample request against the speech-to-text service would look like so.
+Whenever any of the IBM Cloud components (Speech to Text, Assistant, etc) seem to be unresponsive, check the [IBM Cloud Status page](https://status.ng.bluemix.net/) to see if the service is down or under maintenance. If not, try running a sample request using curl and ensure that a 200 HTTP response is returned. A sample request against the speech-to-text service would look like so.
 ```
 curl -v -u ${username}:${password} https://stream.watsonplatform.net/speech-to-text/api/v1/models
 ```
