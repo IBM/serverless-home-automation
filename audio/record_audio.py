@@ -36,7 +36,7 @@ def audio_int(num_samples=50):
         is the avg of the 20% largest intensities recorded.
     """
 
-    print "Getting intensity values from mic."
+    print("Getting intensity values from mic.")
     p = pyaudio.PyAudio()
 
     stream = p.open(format=FORMAT,
@@ -49,8 +49,7 @@ def audio_int(num_samples=50):
               for x in range(num_samples)]
     values = sorted(values, reverse=True)
     r = sum(values[:int(num_samples * 0.2)]) / int(num_samples * 0.2)
-    print " Finished "
-    print " Average audio intensity is ", r
+    print("Average audio intensity is: " + r)
     stream.close()
     p.terminate()
     return r
@@ -74,7 +73,7 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=1):
                     input=True,
                     frames_per_buffer=CHUNK)
 
-    print "* Listening mic. "
+    print("* Listening mic. ")
     audio2send = []
     cur_data = ''  # current chunk  of audio data
     rel = RATE / CHUNK
@@ -88,15 +87,15 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=1):
         slid_win.append(math.sqrt(abs(audioop.avg(cur_data, 4))))
         if(sum([x > THRESHOLD for x in slid_win]) > 0):
             if(not started):
-                print "Starting record of phrase"
+                print("Starting record of phrase")
                 started = True
             audio2send.append(cur_data)
         elif (started is True):
-            print "Finished"
+            print("Finished")
             # The limit was reached, finish capture and deliver.
             save_speech(list(prev_audio) + audio2send, p)
             result = transcribe_audio('speech.wav')
-            print result
+            print(result)
             text = result['data']
             print("Text: " + text + "\n")
             started = False
@@ -104,7 +103,7 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=1):
             prev_audio = deque(maxlen=0.5 * rel)
             audio2send = []
             n -= 1
-    print "* Done recording"
+    print("* Done recording")
     stream.close()
     p.terminate()
 
