@@ -1,14 +1,9 @@
-import pyaudio
-import httplib
-import wave
 import audioop
 from collections import deque
-import os
-import requests
 import math
-from os.path import join, dirname
+import wave
 
-from watson_developer_cloud import SpeechToTextV1 as SpeechToText
+import pyaudio
 
 LANG_CODE = 'en-US'  # Language to use
 
@@ -18,17 +13,21 @@ CHUNK = 1024  # CHUNKS of bytes to read each time from mic
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 16000
-THRESHOLD = 2500  # The threshold intensity that defines silence
-                  # and noise signal (an int. lower than THRESHOLD is silence).
 
-SILENCE_LIMIT = 2  # Silence limit in seconds. The max ammount of seconds where
-                   # only silence is recorded. When this time passes the
-                   # recording finishes and the file is delivered.
+# The threshold intensity that defines silence
+# and noise signal (an int. lower than THRESHOLD is silence).
+THRESHOLD = 2500
 
-PREV_AUDIO = 0.5  # Previous audio (in seconds) to prepend. When noise
-                  # is detected, how much of previously recorded audio is
-                  # prepended. This helps to prevent chopping the beggining
-                  # of the phrase.
+# Silence limit in seconds. The max ammount of seconds where
+# only silence is recorded. When this time passes the
+# recording finishes and the file is delivered.
+SILENCE_LIMIT = 2
+
+# Previous audio (in seconds) to prepend. When noise
+# is detected, how much of previously recorded audio is
+# prepended. This helps to prevent chopping the beggining
+# of the phrase.
+PREV_AUDIO = 0.5
 
 
 def audio_int(num_samples=50):
@@ -66,7 +65,7 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=1):
     (-1 for infinite).
     """
 
-    #Open stream
+    # Open stream
     p = pyaudio.PyAudio()
 
     stream = p.open(format=FORMAT,
@@ -78,13 +77,12 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=1):
     print "* Listening mic. "
     audio2send = []
     cur_data = ''  # current chunk  of audio data
-    rel = RATE/CHUNK
+    rel = RATE / CHUNK
     slid_win = deque(maxlen=SILENCE_LIMIT * rel)
-    #Prepend audio from 0.5 seconds before noise was detected
+    # Prepend audio from 0.5 seconds before noise was detected
     prev_audio = deque(maxlen=PREV_AUDIO * rel)
     started = False
     n = num_phrases
-    response = []
     while (num_phrases == -1 or n > 0):
         cur_data = stream.read(CHUNK)
         slid_win.append(math.sqrt(abs(audioop.avg(cur_data, 4))))
@@ -96,7 +94,7 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=1):
         elif (started is True):
             print "Finished"
             # The limit was reached, finish capture and deliver.
-            filename = save_speech(list(prev_audio) + audio2send, p)
+            save_speech(list(prev_audio) + audio2send, p)
             result = transcribe_audio('speech.wav')
             print result
             text = result['data']
@@ -109,6 +107,7 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=1):
     print "* Done recording"
     stream.close()
     p.terminate()
+
 
 def transcribe_audio(path_to_audio_file):
     encoded_audio = open('speech.wav', 'r').read().encode("base64")
@@ -125,12 +124,14 @@ def save_speech(data, p):
     wf = wave.open(filename + '.wav', 'wb')
     wf.setnchannels(1)
     wf.setsampwidth(p.get_sample_size(pyaudio.paInt16))
-    wf.setframerate(16000)  # TODO make this value a function parameter?
+    # TODO make this value a function parameter?
+    wf.setframerate(16000)
     wf.writeframes(data)
     wf.close()
     return filename + '.wav'
 
+
 if(__name__ == '__main__'):
     listen_for_speech()  # listen to mic.
-    #print stt_google_wav('hello.flac')  # translate audio file
-    #audio_int()  # To measure your mic levels
+    # print stt_google_wav('hello.flac')  # translate audio file
+    # audio_int()  # To measure your mic levels
