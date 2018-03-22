@@ -112,7 +112,7 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=1):
 
 def transcribe_audio(path_to_audio_file):
     encoded_audio = open('speech.wav', 'r').read().encode("base64")
-    // TODO: use watson speech to text service
+    # TODO: use watson speech to text service
 
 
 def save_speech(data, p):
