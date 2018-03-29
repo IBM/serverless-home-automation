@@ -144,7 +144,7 @@ wsk package bind /whisk.system/watson-speechToText myWatsonSpeechToText -p usern
 
 다음으로, 액션을 시퀀스로 배열할 수 있습니다.
 ```
-wsk action create homeSequence --sequence /myWatsonSpeechToText/speechToText,conversation,iot-pub
+wsk action create homeSequence --sequence myWatsonSpeechToText/speechToText,conversation,iot-pub
 ```
 
 <!-- TODO, update node server with multi devices from Pi -->

@@ -6,7 +6,6 @@ var exec = require('child_process').exec;
 For this script to work, the following env variables will need to be defined beforehand
 
 Watson IoT Credentials, which can be found in the dashboard "Devices" and "Apps" sections
-- IOT_ORG
 - IOT_API_KEY
 - IOT_AUTH_TOKEN
 - IOT_ORG
@@ -31,8 +30,8 @@ var mqttChannel = 'iot-2/type/' + process.env.IOT_DEVICE_TYPE + '/id/' + process
 
 var libs = {
   ir: '/usr/bin/irsend',
-  rf: '/var/www/rfoutlet/codesend'
-  // /var/www/rfoutlet/codesend " + process.env.RF_PLUG_ON_1 + " -l " + process.env.RF_PLUG_ON_PULSE_1 + " -p 0"
+  rf: '/opt/433Utils/RPi_utils/codesend'
+  // /opt/433Utils/RPi_utils/codesend " + process.env.RF_PLUG_ON_1 + " -l " + process.env.RF_PLUG_ON_PULSE_1 + " -p 0"
 }
 
 // var lirc_values = {
@@ -89,42 +88,42 @@ mqttClient.on('message', function (topic, message) {
   var result = JSON.parse(message.toString('utf8'))
   if ((result.intent == 'turnon') && (result.entity == 'light')) {
     console.log("Turning on light")
-    exec("/var/www/rfoutlet/codesend process.env.RF_LIGHT_ON -l 190 -p 0", function (error, stdout, stderr) {
+    exec("/opt/433Utils/RPi_utils/codesend process.env.RF_LIGHT_ON -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
       // console.log('stderr: ' + stderr);
     });
   }
   else if ((result.intent == 'turnoff') && (result.entity == 'light')) {
       console.log("Turning off light")
-      exec("/var/www/rfoutlet/codesend process.env.RF_LIGHT_OFF -l 190 -p 0", function (error, stdout, stderr) {
+      exec("/opt/433Utils/RPi_utils/codesend process.env.RF_LIGHT_OFF -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
       // console.log('stderr: ' + stderr);
     });
   }
   else if ((result.intent == 'turnon') && (result.entity == 'fan')) {
       console.log("Turning on fan")
-      exec("/var/www/rfoutlet/codesend process.env.RF_FAN_ON -l 190 -p 0", function (error, stdout, stderr) {
+      exec("/opt/433Utils/RPi_utils/codesend process.env.RF_FAN_ON -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
       // console.log('stderr: ' + stderr);
     });
   }
   else if ((result.intent == 'turnoff') && (result.entity == 'fan')) {
       console.log("Turning off fan")
-      exec("/var/www/rfoutlet/codesend process.env.RF_FAN_OFF -l 191 -p 0", function (error, stdout, stderr) {
+      exec("/opt/433Utils/RPi_utils/codesend process.env.RF_FAN_OFF -l 191 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
       // console.log('stderr: ' + stderr);
     });
   }
   else if ((result.intent == 'turnon') && (result.entity == 'clock')) {
       console.log("Turning on clock")
-      exec("/var/www/rfoutlet/codesend process.env.RF_CLOCK_ON -l 190 -p 0", function (error, stdout, stderr) {
+      exec("/opt/433Utils/RPi_utils/codesend process.env.RF_CLOCK_ON -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
       // console.log('stderr: ' + stderr);
     });
   }
   else if ((result.intent == 'turnoff') && (result.entity == 'clock')) {
       console.log("Turning off fan")
-      exec("/var/www/rfoutlet/codesend process.env.RF_CLOCK_OFF -l 190 -p 0", function (error, stdout, stderr) {
+      exec("/opt/433Utils/RPi_utils/codesend process.env.RF_CLOCK_OFF -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
       // console.log('stderr: ' + stderr);
     });

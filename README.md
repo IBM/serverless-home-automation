@@ -73,12 +73,12 @@ Once the script completes run `gpio readall` to ensure that wiringPi installed s
 
 Now we can determine which RF codes correspond with the Etekcity outlets. Start by executing
 ```
-sudo /var/www/rfoutlet/RFSniffer
+sudo /opt/433Utils/RPi_utils/RFSniffer
 ```
 
 This will listen on the RF receiver for incoming signals, and write them to stdout. As the on/off buttons are pressed on the Etekcity remote, the Raspberry Pi should show the following output if the circuit is wired correctly.
 ```
-pi@raspberrypi:~ $ sudo /var/www/rfoutlet/RFSniffer
+pi@raspberrypi:~ $ sudo /opt/433Utils/RPi_utils/RFSniffer
 Received 5528835
 Received pulse 190
 Received 5528844
@@ -97,8 +97,8 @@ Now, plug in the associated socket, and run the following command to ensure the 
 
 ```
 source /etc/environment
-/var/www/rfoutlet/codesend ${RF_PLUG_ON_1} -l ${RF_PLUG_ON_PULSE_1}
-/var/www/rfoutlet/codesend ${RF_PLUG_OFF_1} -l ${RF_PLUG_OFF_PULSE_1}
+/opt/433Utils/RPi_utils/codesend ${RF_PLUG_ON_1} -l ${RF_PLUG_ON_PULSE_1}
+/opt/433Utils/RPi_utils/codesend ${RF_PLUG_OFF_1} -l ${RF_PLUG_OFF_PULSE_1}
 ```
 
 Now that we can control the sockets manually via cli, we’ll move forward and experiment with different ways to control them in an automated fashion. Rather than writing and executing pipelines and complex automation logic on the Raspberry Pi, we’ll utilize a serverless, event driven platform called IBM Cloud Functions. In this implementation, IBM Cloud Functions actions communicate with the Raspberry Pi via MQTT messages.
@@ -160,7 +160,7 @@ wsk package bind /whisk.system/watson-speechToText myWatsonSpeechToText -p usern
 
 Next, we can arrange the actions into a sequence
 ```
-wsk action create homeSequence --sequence /myWatsonSpeechToText/speechToText,conversation,iot-pub
+wsk action create homeSequence --sequence myWatsonSpeechToText/speechToText,conversation,iot-pub
 ```
 
 <!-- TODO, update node server with multi-devices from Pi -->
