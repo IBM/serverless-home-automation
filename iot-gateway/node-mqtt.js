@@ -1,29 +1,47 @@
 var mqtt = require('mqtt');
 var exec = require('child_process').exec;
-var _ = require('underscore')
+// var _ = require('underscore')
+
+/*
+For this script to work, the following env variables will need to be defined beforehand
+
+Watson IoT Credentials, which can be found in the dashboard "Devices" and "Apps" sections
+- IOT_ORG
+- IOT_API_KEY
+- IOT_AUTH_TOKEN
+- IOT_ORG
+- IOT_DEVICE_TYPE
+
+On/Off RF codes for each devices we'd like to control, in the following format
+- RF_FAN_OFF
+- RF_FAN_ON
+*/
+
 var mqttBroker = 'mqtt://' + process.env.IOT_ORG + '.messaging.internetofthings.ibmcloud.com'
 var mqttOptions = {
   username: process.env.IOT_API_KEY,
-  password: process.env.IOT_AUTH_TOKEN
+  password: process.env.IOT_AUTH_TOKEN,
   clientId: 'a:' + process.env.IOT_ORG + ':server'
 }
 var mqttClient = mqtt.connect(mqttBroker, mqttOptions);
-var mqttChannel = 'iot-2/type/' + process.env.IOT_DEVICE_TYPE + '/id/' + process.env.IOT_DEVICE_ID '/evt/query/fmt/json'
+var mqttChannel = 'iot-2/type/' + process.env.IOT_DEVICE_TYPE + '/id/' + process.env.IOT_DEVICE_ID + '/evt/query/fmt/json'
 
-var config = JSON.parse('./devices.json')
+
+// var config = JSON.parse('devices.json')
+
 var libs = {
   ir: '/usr/bin/irsend',
   rf: '/var/www/rfoutlet/codesend'
   // /var/www/rfoutlet/codesend " + process.env.RF_PLUG_ON_1 + " -l " + process.env.RF_PLUG_ON_PULSE_1 + " -p 0"
 }
 
-var lirc_values = {
-  "on":
-}
-
-var args = {
-  "":
-}
+// var lirc_values = {
+//   "on":
+// }
+//
+// var args = {
+//   "":
+// }
 
 
 // var lirc_values = ["POWER", "VIDEOMODE", "CHANNELUP", "CHANNELDOWN", "VOLUMEUP", "VOLUMEDOWN", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -44,7 +62,7 @@ var args = {
 
 
 // var _ = require("underscore");
-// _.where( devices, {location: "kitchen", type: "light"})
+// _.where( devices, {location: "kitchen", class: "light"})
 // _.where( devices, {location: "livingroom", class: "media_player"})
 // if _.where( devices['devices'], {location: "livingroom", class: "media_player"})[0]['belongs_to']['current_state'] == "off"
 // turn on
@@ -60,81 +78,55 @@ var args = {
 // persist state in memory?
 
 
-
-function genCmds(device, desiredState) {
-    // determine required commands, return as array
-
-    // to determine required commands, we need to look at
-      // parent device state (if exists)
-      // var parentDevice = _.where( config['devices'], {name: device[0]['belongs_to']})[0]
-        // adjust if parent device state isn't on
-      // current device state
-
-    // loop through array, execute commands with .2 second delay between each
-    var cmds = []
-    // check for parentDevice
-    async.series([
-      function(){
-
-      },
-      function(){
-
-      }
-    ])
-    var parentDevice = _.where( config['devices'], {name: device[0]['belongs_to']} )[0]
-    if ( parentDevice.states.power == 'off' ) {
-      cmds.push(
-        // rf
-        libs[parentDevice.protocol] + parentDevice.config.on + '-l' + parentDevice.config.pulse + '-p 0'
-
-        libs[parentDevice.protocol] + "SEND_ONCE" + " KEY_POWER" +  parentDevice.config.lirc
-      )
-
-    if ( device.states.power == 'off' ) {
-      cmds.push(
-        // rf
-        libs[device.protocol] + device.config.on + '-l' + device.config.pulse + '-p 0'
-
-        libs[device.protocol] + "SEND_ONCE" + " KEY_POWER" +  device.config.lirc
-      )
-
-    if ( desiredState == channel ) {
-
-    }
-// /var/www/rfoutlet/codesend " + process.env.RF_PLUG_ON_1 + " -l " + process.env.RF_PLUG_ON_PULSE_1 + " -p 0"
-// irsend SEND_ONCE KEY_POWER /home/pi/remotes/vanness_cable.conf
-
-
-      // _.where( config['devices'], {name:
-      // parentDevice.states.power == "on"
-    }
-
-
-    libs[type] +
-    return []
-}
-
 mqttClient.on('connect', function () {
-  mqttClient.subscribe(mqttChannel)
-  console.log("connected to mqtt broker, waiting for requests")
+  mqttClient.subscribe(mqttChannel);
+  console.log("connected");
 });
 
 mqttClient.on('message', function (topic, message) {
-  // parse message
-  var msgPayload = JSON.parse(messageStr)
-  // select device(s) from config
-  // _.where( devices, {location: "kitchen", type: "light"})
-
-  // // testing
-  // var msgPayload = {}
-  // msgPayload['entities'] = {location: "livingroom", class: "media_player", type: "chromecast"}
-
-  var device = _.where( config['devices'], msgPayload['entities'] )
-  var desiredState = msgPayload['state']
-  for cmd in (genCmds(device, desiredState)) {
-      exec(cmd, function (error, stdout, stderr) {
-      console.log('stdout: ' + stdout);
-      console.log('stderr: ' + stderr);)
-    }
+  //console.log('topic')
+  //console.log(topic)
+  var result = JSON.parse(message.toString('utf8'))
+  if ((result.intent == 'turnon') && (result.entity == 'light')) {
+    console.log("Turning on light")
+    exec("/var/www/rfoutlet/codesend process.env.RF_LIGHT_ON -l 190 -p 0", function (error, stdout, stderr) {
+      console.log(' ' + stdout);
+      // console.log('stderr: ' + stderr);
+    });
   }
-})
+  else if ((result.intent == 'turnoff') && (result.entity == 'light')) {
+      console.log("Turning off light")
+      exec("/var/www/rfoutlet/codesend process.env.RF_LIGHT_OFF -l 190 -p 0", function (error, stdout, stderr) {
+      console.log(' ' + stdout);
+      // console.log('stderr: ' + stderr);
+    });
+  }
+  else if ((result.intent == 'turnon') && (result.entity == 'fan')) {
+      console.log("Turning on fan")
+      exec("/var/www/rfoutlet/codesend process.env.RF_FAN_ON -l 190 -p 0", function (error, stdout, stderr) {
+      console.log(' ' + stdout);
+      // console.log('stderr: ' + stderr);
+    });
+  }
+  else if ((result.intent == 'turnoff') && (result.entity == 'fan')) {
+      console.log("Turning off fan")
+      exec("/var/www/rfoutlet/codesend process.env.RF_FAN_OFF -l 191 -p 0", function (error, stdout, stderr) {
+      console.log(' ' + stdout);
+      // console.log('stderr: ' + stderr);
+    });
+  }
+  else if ((result.intent == 'turnon') && (result.entity == 'clock')) {
+      console.log("Turning on clock")
+      exec("/var/www/rfoutlet/codesend process.env.RF_CLOCK_ON -l 190 -p 0", function (error, stdout, stderr) {
+      console.log(' ' + stdout);
+      // console.log('stderr: ' + stderr);
+    });
+  }
+  else if ((result.intent == 'turnoff') && (result.entity == 'clock')) {
+      console.log("Turning off fan")
+      exec("/var/www/rfoutlet/codesend process.env.RF_CLOCK_OFF -l 190 -p 0", function (error, stdout, stderr) {
+      console.log(' ' + stdout);
+      // console.log('stderr: ' + stderr);
+    });
+  }
+});
