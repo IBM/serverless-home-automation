@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sudo apt-get -y update
-sudo apt-get -y install git-core build-essential python-setuptools python-pyaudio python3-pyaudio sox make pulseaudio alsa-utils
+sudo apt-get -y install git-core build-essential python-setuptools python-pyaudio python3-pyaudio sox make pulseaudio alsa-utils flac
 sudo easy_install pip
 
 if [ -f ~/.asoundrc ] ; then
@@ -19,7 +19,7 @@ sudo chown pi:pi $libs_dir
 #sudo apt-get -y install swig3.0 # apt-get version outdated, have to build from source
 #TODO, add validated swig url or use git
 # git clone https://github.com/swig/swig
-sudo apt-get -y install libpcre3 libpcre3-dev autoconf
+sudo apt-get -y install libpcre3 libpcre3-dev autoconf python-dev byacc flex
 cd $libs_dir
 wget http://ufpr.dl.sourceforge.net/project/swig/swig/swig-3.0.12/swig-3.0.12.tar.gz
 tar -xzf swig-3.0.12.tar.gz
@@ -32,7 +32,8 @@ sudo make install
 cd $libs_dir
 sudo apt-get -y install libatlas-base-dev
 sudo pip install pyaudio
-git clone https://github.com/Kitt-AI/snowboy/
+git clone https://github.com/kkbankol-ibm/snowboy/
+#git clone https://github.com/Kitt-AI/snowboy/
 cd snowboy/swig/Python
 make
 

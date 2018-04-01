@@ -154,7 +154,7 @@ Then insert the corresponding credentials when running the commands below.
 
 ```
 wsk action update conversation -p username ${conversation_username} -p password ${conversation_password} -p workspace_id ${conversation_workspace_id}
-wsk action update iot-pub -p org ${iot_org_id} -p device_id ${device_id} -p api_token ${api_token}
+wsk action update iot-pub -p iot_org_id ${iot_org_id} -p device_id ${device_id} -p api_token ${api_token} -p device_type ${device_type}
 wsk package bind /whisk.system/watson-speechToText myWatsonSpeechToText -p username ${stt_username} -p password ${stt_password}
 ```
 
