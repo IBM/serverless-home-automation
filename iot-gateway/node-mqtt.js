@@ -22,17 +22,16 @@ var mqttOptions = {
   password: process.env.IOT_AUTH_TOKEN,
   clientId: 'a:' + process.env.IOT_ORG + ':server'
 }
-var mqttClient = mqtt.connect(mqttBroker, mqttOptions);
 var mqttChannel = 'iot-2/type/' + process.env.IOT_DEVICE_TYPE + '/id/' + process.env.IOT_DEVICE_ID + '/evt/query/fmt/json'
 
 
 // var config = JSON.parse('devices.json')
 
-var libs = {
-  ir: '/usr/bin/irsend',
-  rf: '/opt/433Utils/RPi_utils/codesend'
-  // /opt/433Utils/RPi_utils/codesend " + process.env.RF_PLUG_ON_1 + " -l " + process.env.RF_PLUG_ON_PULSE_1 + " -p 0"
-}
+// var libs = {
+//   ir: '/usr/bin/irsend',
+//   rf: '/opt/433Utils/RPi_utils/codesend'
+//   // /opt/433Utils/RPi_utils/codesend " + process.env.RF_PLUG_ON_1 + " -l " + process.env.RF_PLUG_ON_PULSE_1 + " -p 0"
+// }
 
 // var lirc_values = {
 //   "on":
@@ -76,56 +75,95 @@ var libs = {
 
 // persist state in memory?
 
-
+var mqttClient = mqtt.connect(mqttBroker, mqttOptions);
 mqttClient.on('connect', function () {
   mqttClient.subscribe(mqttChannel);
   console.log("connected");
 });
 
 mqttClient.on('message', function (topic, message) {
-  //console.log('topic')
+  console.log(message.toString('utf8'))
   //console.log(topic)
-  var result = JSON.parse(message.toString('utf8'))
-  if ((result.intent == 'turnon') && (result.entity == 'light')) {
+  var result = JSON.parse(message.toString('utf8')).d
+  // if ((result.intent == 'turnon') && (result.entity == 'light')) {
+  if ((result.intents.filter(function(value){ return value.intent=="turnon"})) && (result.entities.filter(function(value){ return value.value=="light"}))) {
     console.log("Turning on light")
     exec("/opt/433Utils/RPi_utils/codesend process.env.RF_LIGHT_ON -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
       // console.log('stderr: ' + stderr);
     });
   }
-  else if ((result.intent == 'turnoff') && (result.entity == 'light')) {
-      console.log("Turning off light")
-      exec("/opt/433Utils/RPi_utils/codesend process.env.RF_LIGHT_OFF -l 190 -p 0", function (error, stdout, stderr) {
+  else if ((result.intents.filter(function(value){ return value.intent=="turnoff"})) && (result.entities.filter(function(value){ return value.value=="light"}))) {
+    console.log("Turning off light")
+    exec("/opt/433Utils/RPi_utils/codesend process.env.RF_LIGHT_OFF -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
       // console.log('stderr: ' + stderr);
     });
   }
-  else if ((result.intent == 'turnon') && (result.entity == 'fan')) {
-      console.log("Turning on fan")
-      exec("/opt/433Utils/RPi_utils/codesend process.env.RF_FAN_ON -l 190 -p 0", function (error, stdout, stderr) {
+  else if ((result.intents.filter(function(value){ return value.intent=="turnon"})) && (result.entities.filter(function(value){ return value.value=="fan"}))) {
+    console.log("Turning on fan")
+    exec("/opt/433Utils/RPi_utils/codesend process.env.RF_FAN_ON -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
       // console.log('stderr: ' + stderr);
     });
   }
-  else if ((result.intent == 'turnoff') && (result.entity == 'fan')) {
-      console.log("Turning off fan")
-      exec("/opt/433Utils/RPi_utils/codesend process.env.RF_FAN_OFF -l 191 -p 0", function (error, stdout, stderr) {
+  else if ((result.intents.filter(function(value){ return value.intent=="turnoff"})) && (result.entities.filter(function(value){ return value.value=="fan"}))) {
+    console.log("Turning off fan")
+    exec("/opt/433Utils/RPi_utils/codesend process.env.RF_FAN_OFF -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
       // console.log('stderr: ' + stderr);
     });
   }
-  else if ((result.intent == 'turnon') && (result.entity == 'clock')) {
-      console.log("Turning on clock")
-      exec("/opt/433Utils/RPi_utils/codesend process.env.RF_CLOCK_ON -l 190 -p 0", function (error, stdout, stderr) {
+  else if ((result.intents.filter(function(value){ return value.intent=="turnon"})) && (result.entities.filter(function(value){ return value.value=="clock"}))) {
+    console.log("Turning on clock")
+    exec("/opt/433Utils/RPi_utils/codesend process.env.RF_FAN_ON -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
       // console.log('stderr: ' + stderr);
     });
   }
-  else if ((result.intent == 'turnoff') && (result.entity == 'clock')) {
-      console.log("Turning off fan")
-      exec("/opt/433Utils/RPi_utils/codesend process.env.RF_CLOCK_OFF -l 190 -p 0", function (error, stdout, stderr) {
+  else if ((result.intents.filter(function(value){ return value.intent=="turnoff"})) && (result.entities.filter(function(value){ return value.value=="clock"}))) {
+    console.log("Turning off clock")
+    exec("/opt/433Utils/RPi_utils/codesend process.env.RF_FAN_OFF -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
       // console.log('stderr: ' + stderr);
     });
   }
-});
+})
+//
+//   else if ((result.intent == 'turnoff') && (result.entity == 'light')) {
+//       console.log("Turning off light")
+//       exec("/opt/433Utils/RPi_utils/codesend process.env.RF_LIGHT_OFF -l 190 -p 0", function (error, stdout, stderr) {
+//       console.log(' ' + stdout);
+//       // console.log('stderr: ' + stderr);
+//     });
+//   }
+//   else if ((result.intent == 'turnon') && (result.entity == 'fan')) {
+//       console.log("Turning on fan")
+//       exec("/opt/433Utils/RPi_utils/codesend process.env.RF_FAN_ON -l 190 -p 0", function (error, stdout, stderr) {
+//       console.log(' ' + stdout);
+//       // console.log('stderr: ' + stderr);
+//     });
+//   }
+//   else if ((result.intent == 'turnoff') && (result.entity == 'fan')) {
+//       console.log("Turning off fan")
+//       exec("/opt/433Utils/RPi_utils/codesend process.env.RF_FAN_OFF -l 191 -p 0", function (error, stdout, stderr) {
+//       console.log(' ' + stdout);
+//       // console.log('stderr: ' + stderr);
+//     });
+//   }
+//   else if ((result.intent == 'turnon') && (result.entity == 'clock')) {
+//       console.log("Turning on clock")
+//       exec("/opt/433Utils/RPi_utils/codesend process.env.RF_CLOCK_ON -l 190 -p 0", function (error, stdout, stderr) {
+//       console.log(' ' + stdout);
+//       // console.log('stderr: ' + stderr);
+//     });
+//   }
+//   else if ((result.intent == 'turnoff') && (result.entity == 'clock')) {
+//       console.log("Turning off fan")
+//       exec("/opt/433Utils/RPi_utils/codesend process.env.RF_CLOCK_OFF -l 190 -p 0", function (error, stdout, stderr) {
+//       console.log(' ' + stdout);
+//       // console.log('stderr: ' + stderr);
+//     });
+//   }
+// });
+// )
