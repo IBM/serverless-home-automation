@@ -1,3 +1,4 @@
+module.paths.push('/usr/lib/node_modules')
 var mqtt = require('mqtt');
 var exec = require('child_process').exec;
 // var _ = require('underscore')
@@ -20,7 +21,7 @@ var mqttBroker = 'mqtt://' + process.env.IOT_ORG + '.messaging.internetofthings.
 var mqttOptions = {
   username: process.env.IOT_API_KEY,
   password: process.env.IOT_AUTH_TOKEN,
-  clientId: 'a:' + process.env.IOT_ORG + ':server'
+  clientId: 'a:' + process.env.IOT_ORG + ':server1'
 }
 var mqttChannel = 'iot-2/type/' + process.env.IOT_DEVICE_TYPE + '/id/' + process.env.IOT_DEVICE_ID + '/evt/query/fmt/json'
 
@@ -84,43 +85,67 @@ mqttClient.on('connect', function () {
 mqttClient.on('subscribe', function () {
   console.log("subscribed to " + mqttChannel);
 });
+function getEntity(entities, entity){
+   //console.log("entities: ",entities,"entitie keys: ",entities.keys())
+   for(var ent in entities) {
+        //console.log("entity object: ",entities[ent])
+        //console.log(entities[ent].value)
+        if (entities[ent].value == entity) {
+            return true;
+        }
+   }
+   return false
+}
+function getIntent(intents, intent){
+   //console.log("intents ",intents)
+   for (var intnt in intents) {
+        //console.log(" intent ",intents[intnt].intent)
+        if (intents[intnt].intent == undefined)
+           continue
+        if (intents[intnt].intent == intent) {
+            return true;
+        }
+   }
+   return false
+}
 
 mqttClient.on('message', function (topic, message) {
   console.log(message.toString('utf8'))
   //console.log(topic)
   var result = JSON.parse(message.toString('utf8')).d
   // if ((result.intent == 'turnon') && (result.entity == 'light')) {
-  if ( (( result.intents.filter(function(value){ return value.intent=="turnon"})).length > 0) && (((result.entities.filter(function(value){ return value.value=="light"}))).length > 0)) {
+  if (getIntent(result.intents, "turnon") && getEntity(result.entities, "light")){ 
+  //if ( (( result.intents.filter(function(value){ return value.intent=="turnon"})).length > 0) && (((result.entities.filter(function(value){ return value.value=="light"}))).length > 0)) {
     console.log("Turning on light")
-    exec("/opt/433Utils/RPi_utils/codesend " + process.env.RF_LIGHT_ON  + " -l 190 -p 0", function (error, stdout, stderr) {
+    exec("/opt/433Utils/RPi_utils/codesend " + process.env.RF_LIGHT_ON + " -l 174 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
       // console.log('stderr: ' + stderr);
     });
-  } else if ( (( result.intents.filter(function(value){ return value.intent=="turnoff"})).length > 0) && (((result.entities.filter(function(value){ return value.value=="light"}))).length > 0)) {
+  } else if ( getIntent(result.intents, "turnoff") && getEntity(result.entities, "light")) {
     console.log("Turning off light")
-    exec("/opt/433Utils/RPi_utils/codesend " + process.env.RF_LIGHT_OFF + " -l 190 -p 0", function (error, stdout, stderr) {
+    exec("/opt/433Utils/RPi_utils/codesend " + process.env.RF_LIGHT_OFF +" -l 172 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
       // console.log('stderr: ' + stderr);
     });
-  } else if ( (( result.intents.filter(function(value){ return value.intent=="turnon"})).length > 0) && (((result.entities.filter(function(value){ return value.value=="fan"}))).length > 0)) {
+  } else if ( getIntent(result.intents, "turnon") && getEntity(result.entities, "fan"))  {
     console.log("Turning on fan")
-    exec("/opt/433Utils/RPi_utils/codesend " + process.env.RF_FAN_ON + " -l 190 -p 0", function (error, stdout, stderr) {
+    exec("/opt/433Utils/RPi_utils/codesend "+process.env.RF_FAN_ON +" -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
       // console.log('stderr: ' + stderr);
     });
-  } else if ( (( result.intents.filter(function(value){ return value.intent=="turnoff"})).length > 0) && (((result.entities.filter(function(value){ return value.value=="fan"}))).length > 0)) {
+  } else if ( getIntent(result.intents, "turnoff") && getEntity(result.entities, "fan"))  {
     console.log("Turning off fan")
     exec("/opt/433Utils/RPi_utils/codesend " + process.env.RF_FAN_OFF + " -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
       // console.log('stderr: ' + stderr);
     });
-  } else if ( (( result.intents.filter(function(value){ return value.intent=="turnon"})).length > 0) && (((result.entities.filter(function(value){ return value.value=="clock"}))).length > 0)) {
+  } else if ( getIntent(result.intents, "turnon") && getEntity(result.entities, "radio"))  {
     console.log("Turning on clock")
-    exec("/opt/433Utils/RPi_utils/codesend " + process.env.RF_FAN_ON + " -l 190 -p 0", function (error, stdout, stderr) {
+    exec("/opt/433Utils/RPi_utils/codesend "+ process.env.RF_FAN_ON + " -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
       // console.log('stderr: ' + stderr);
     });
-  } else if ( (( result.intents.filter(function(value){ return value.intent=="turnoff"})).length > 0) && (((result.entities.filter(function(value){ return value.value=="clock"}))).length > 0)) {
+  } else if ( getIntent(result.intents, "turnoff") && getEntity(result.entities, "radio"))  {
     console.log("Turning off clock")
     exec("/opt/433Utils/RPi_utils/codesend " + process.env.RF_FAN_OFF + " -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
