@@ -6,3 +6,5 @@ install:
   - "pip install flake8"
 script:
  - flake8 . --ignore E501,F841
+git:
+  submodules: false
