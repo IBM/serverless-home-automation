@@ -12,7 +12,7 @@ We used Snowboy for this purpose. First create a hotword from their [website](ht
 
 Once you create a hotword with three audio samples, you can now download the model which we will use in the later section.
 
-### Setup Microphone
+### Configure Microphone
 After plugging in the microphone, obtain the sound card number with the following command
 ```
 pi@raspberrypi2:/tmp $ cat /proc/asound/cards
@@ -39,8 +39,24 @@ ctl.!default {
 Check if audio can be recorded via microphone using
 `rec /tmp/temp.wav`
 
+Press Ctrl+C to quit the `rec` process
 
-Troubleshooting
+### Running a demo
+Now we will run the sample script that will capture the audio after the hotword is detected and use Watson Speech to Text with the captured audio.
+To do so, run the following to clone the associated "snowboy" submodule.
+```
+git submodule init
+git submodule update
+```
+
+Test end-to-end sequence with the following command
+```
+python demo_arecord.py Hey_Watson_PI.pmdl
+```
+
+When the wakeword is detected, the `wsk_transcribe_audio` method defined [here](https://github.com/kkbankol-ibm/snowboy/blob/26f49a6a12088f2c2797d68db5ef7eda88798deb/examples/Python/snowboydecoder.py#L61:L770) will record audio for 3 seconds, convert the wav result to a smaller, lossless flac audio file, and then forward the flac audio to the openwhisk sequence. The `whisk_namespace`, `whisk_action`, and `auth` values in the method will all need to be updated with your personal account. These values can be found by running `wsk property get` and `wsk action list`.
+
+### Troubleshooting
 ```
 # jack server is not running or cannot be started
 
@@ -50,13 +66,3 @@ pulseaudio --start
 
 Suppress false errors
 https://github.com/Kitt-AI/snowboy/issues/9
-
-
-
-
-### Running a demo
-Now we will run the sample script that will capture the audio after the hotword is detected and use Watson Speech to Text with the captured audio.
-
-First, we will need to download the pre-packaged Snowboy binaries and their Python wrappers for [Raspberry Pi with Raspbian 8.0](https://s3-us-west-2.amazonaws.com/snowboy/snowboy-releases/rpi-arm-raspbian-8.0-1.1.0.tar.bz2) and unpack it.
-
-Now copy [detect_hotword.py](audio_interface/detect_hotword.py) & [record_audio.py](audio_interface/record_audio.py) into the unpacked folder.

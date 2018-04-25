@@ -9,6 +9,10 @@
 ## Overview and goal
 Over the past few years, we’ve seen a significant rise in popularity for intelligent personal assistants, such as Apple’s Siri, Amazon Alexa, and Google Assistant. Though they initially appeared to be little more than a novelty, they’ve evolved to become rather useful as a convenient interface to interact with service APIs and IoT connected devices. This developer pattern will guide users through setting up their own starter home automation hub by using a Raspberry PI to turn power outlets off and on. Once the circuit and software dependencies are installed and configured properly, users will also be able to leverage Watson’s language services to control the power outlets via voice and/or text commands. Furthermore, we’ll show how IBM Cloud Functions serverless functions can be leveraged to trigger these sockets based on a timed schedule, changes to the weather, motion sensors being activated, etc.
 
+Audience level: Intermediate. User will need basic hardware skills to assemble electronic circuits on a breadboard, and be somewhat familiar with a Linux terminal to install Raspberry Pi dependencies.
+
+IBM Cloud Plans: This project will work with the Free/Lite version of all required services: Speech To Text, Text To Speech, Watson Assistant, and IBM Cloud Functions.
+
 Click here to view the [IBM Pattern](https://developer.ibm.com/code/patterns/implement-voice-controls-for-serverless-home-automation-hub/) for this project.
 
 ## Prerequisites
@@ -37,7 +41,7 @@ You will need the following accounts and tools:
   * Install Software Dependencies + Libraries
   * Capture RF codes corresponding to wireless sockets
 - [Provision IBM Cloud Services](#provision-and-configure-platform-services)
-- [Create Serverless Functions](#IBM Cloud Functions)
+- [Create Serverless Functions](ibm_cloud_functions)
 - [Deploy to IBM Cloud](#bluemix)
 
 * **Configure Hardware Components**

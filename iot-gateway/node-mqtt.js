@@ -1,8 +1,3 @@
-module.paths.push('/usr/lib/node_modules')
-var mqtt = require('mqtt');
-var exec = require('child_process').exec;
-// var _ = require('underscore')
-
 /*
 For this script to work, the following env variables will need to be defined beforehand
 
@@ -17,64 +12,17 @@ On/Off RF codes for each devices we'd like to control, in the following format
 - RF_FAN_ON
 */
 
-var mqttBroker = 'mqtt://' + process.env.IOT_ORG + '.messaging.internetofthings.ibmcloud.com'
+module.paths.push('/usr/lib/node_modules')
+var mqtt = require('mqtt');
+var exec = require('child_process').exec;
+// var _ = require('underscore')
+var mqttBroker = 'mqtts://' + process.env.IOT_ORG + '.messaging.internetofthings.ibmcloud.com'
 var mqttOptions = {
   username: process.env.IOT_API_KEY,
   password: process.env.IOT_AUTH_TOKEN,
   clientId: 'a:' + process.env.IOT_ORG + ':server1'
 }
 var mqttChannel = 'iot-2/type/' + process.env.IOT_DEVICE_TYPE + '/id/' + process.env.IOT_DEVICE_ID + '/evt/query/fmt/json'
-
-
-// var config = JSON.parse('devices.json')
-
-// var libs = {
-//   ir: '/usr/bin/irsend',
-//   rf: '/opt/433Utils/RPi_utils/codesend'
-//   // /opt/433Utils/RPi_utils/codesend " + process.env.RF_PLUG_ON_1 + " -l " + process.env.RF_PLUG_ON_PULSE_1 + " -p 0"
-// }
-
-// var lirc_values = {
-//   "on":
-// }
-//
-// var args = {
-//   "":
-// }
-
-
-// var lirc_values = ["POWER", "VIDEOMODE", "CHANNELUP", "CHANNELDOWN", "VOLUMEUP", "VOLUMEDOWN", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-
-// play video at <url> from <platform> on <tv>
-
-// wsk sequence determines intent and generic entities describing what the user wants, and which devices should be affected
-//
-// ultimately need wsk to return an array of one or more commands
-// multiple commands are needed when setting a mode or controlling a device that has a parent device (chromecast)
-
-// owned devices are linked to one another
-
-// if intent is "control device", mqtt sends entities with location, type, and requested state
-
-// if intent is "watch_media"
-// use whisk to lookup url, mqtt sends url, select media_player, cast to media_player
-
-
-// var _ = require("underscore");
-// _.where( devices, {location: "kitchen", class: "light"})
-// _.where( devices, {location: "livingroom", class: "media_player"})
-// if _.where( devices['devices'], {location: "livingroom", class: "media_player"})[0]['belongs_to']['current_state'] == "off"
-// turn on
-// wait
-// change state of originally requested device
-
-// flow
-// select device from config
-// select parent device from config
-// check state of parent device, if off, turn on
-// update state of both devices in redis or
-
-// persist state in memory?
 
 var mqttClient = mqtt.connect(mqttBroker, mqttOptions);
 mqttClient.on('connect', function () {
@@ -86,10 +34,7 @@ mqttClient.on('subscribe', function () {
   console.log("subscribed to " + mqttChannel);
 });
 function getEntity(entities, entity){
-   //console.log("entities: ",entities,"entitie keys: ",entities.keys())
    for(var ent in entities) {
-        //console.log("entity object: ",entities[ent])
-        //console.log(entities[ent].value)
         if (entities[ent].value == entity) {
             return true;
         }
@@ -97,9 +42,7 @@ function getEntity(entities, entity){
    return false
 }
 function getIntent(intents, intent){
-   //console.log("intents ",intents)
    for (var intnt in intents) {
-        //console.log(" intent ",intents[intnt].intent)
         if (intents[intnt].intent == undefined)
            continue
         if (intents[intnt].intent == intent) {
@@ -111,85 +54,44 @@ function getIntent(intents, intent){
 
 mqttClient.on('message', function (topic, message) {
   console.log(message.toString('utf8'))
-  //console.log(topic)
   var result = JSON.parse(message.toString('utf8')).d
-  // if ((result.intent == 'turnon') && (result.entity == 'light')) {
-  if (getIntent(result.intents, "turnon") && getEntity(result.entities, "light")){ 
-  //if ( (( result.intents.filter(function(value){ return value.intent=="turnon"})).length > 0) && (((result.entities.filter(function(value){ return value.value=="light"}))).length > 0)) {
+  if (getIntent(result.intents, "turnon") && getEntity(result.entities, "light")){
     console.log("Turning on light")
     exec("/opt/433Utils/RPi_utils/codesend " + process.env.RF_LIGHT_ON + " -l 174 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
-      // console.log('stderr: ' + stderr);
+      console.log('stderr: ' + stderr);
     });
   } else if ( getIntent(result.intents, "turnoff") && getEntity(result.entities, "light")) {
     console.log("Turning off light")
     exec("/opt/433Utils/RPi_utils/codesend " + process.env.RF_LIGHT_OFF +" -l 172 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
-      // console.log('stderr: ' + stderr);
+      console.log('stderr: ' + stderr);
     });
   } else if ( getIntent(result.intents, "turnon") && getEntity(result.entities, "fan"))  {
     console.log("Turning on fan")
     exec("/opt/433Utils/RPi_utils/codesend "+process.env.RF_FAN_ON +" -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
-      // console.log('stderr: ' + stderr);
+      console.log('stderr: ' + stderr);
     });
   } else if ( getIntent(result.intents, "turnoff") && getEntity(result.entities, "fan"))  {
     console.log("Turning off fan")
     exec("/opt/433Utils/RPi_utils/codesend " + process.env.RF_FAN_OFF + " -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
-      // console.log('stderr: ' + stderr);
+      console.log('stderr: ' + stderr);
     });
   } else if ( getIntent(result.intents, "turnon") && getEntity(result.entities, "radio"))  {
     console.log("Turning on clock")
     exec("/opt/433Utils/RPi_utils/codesend "+ process.env.RF_FAN_ON + " -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
-      // console.log('stderr: ' + stderr);
+      console.log('stderr: ' + stderr);
     });
   } else if ( getIntent(result.intents, "turnoff") && getEntity(result.entities, "radio"))  {
     console.log("Turning off clock")
     exec("/opt/433Utils/RPi_utils/codesend " + process.env.RF_FAN_OFF + " -l 190 -p 0", function (error, stdout, stderr) {
       console.log(' ' + stdout);
-      // console.log('stderr: ' + stderr);
+      console.log('stderr: ' + stderr);
     });
   } else {
     console.log("Message received but no matches found")
   }
 })
-//
-//   else if ((result.intent == 'turnoff') && (result.entity == 'light')) {
-//       console.log("Turning off light")
-//       exec("/opt/433Utils/RPi_utils/codesend process.env.RF_LIGHT_OFF -l 190 -p 0", function (error, stdout, stderr) {
-//       console.log(' ' + stdout);
-//       // console.log('stderr: ' + stderr);
-//     });
-//   }
-//   else if ((result.intent == 'turnon') && (result.entity == 'fan')) {
-//       console.log("Turning on fan")
-//       exec("/opt/433Utils/RPi_utils/codesend process.env.RF_FAN_ON -l 190 -p 0", function (error, stdout, stderr) {
-//       console.log(' ' + stdout);
-//       // console.log('stderr: ' + stderr);
-//     });
-//   }
-//   else if ((result.intent == 'turnoff') && (result.entity == 'fan')) {
-//       console.log("Turning off fan")
-//       exec("/opt/433Utils/RPi_utils/codesend process.env.RF_FAN_OFF -l 191 -p 0", function (error, stdout, stderr) {
-//       console.log(' ' + stdout);
-//       // console.log('stderr: ' + stderr);
-//     });
-//   }
-//   else if ((result.intent == 'turnon') && (result.entity == 'clock')) {
-//       console.log("Turning on clock")
-//       exec("/opt/433Utils/RPi_utils/codesend process.env.RF_CLOCK_ON -l 190 -p 0", function (error, stdout, stderr) {
-//       console.log(' ' + stdout);
-//       // console.log('stderr: ' + stderr);
-//     });
-//   }
-//   else if ((result.intent == 'turnoff') && (result.entity == 'clock')) {
-//       console.log("Turning off fan")
-//       exec("/opt/433Utils/RPi_utils/codesend process.env.RF_CLOCK_OFF -l 190 -p 0", function (error, stdout, stderr) {
-//       console.log(' ' + stdout);
-//       // console.log('stderr: ' + stderr);
-//     });
-//   }
-// });
-// )
