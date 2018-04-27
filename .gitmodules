@@ -1,0 +1,3 @@
+[submodule "audio/snowboy"]
+	path = audio/snowboy
+	url = https://github.com/kkbankol-ibm/snowboy.git

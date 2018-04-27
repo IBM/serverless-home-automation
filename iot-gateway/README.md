@@ -2,7 +2,7 @@
 This guide provides a step by step tutorial to equip users to control power outlets using a Raspberry PI. The voice/text commands to trigger the outlets will be processed by IBM Watson's natural language services.
 
 ## Create credentials for Watson IoT Platform (MQTT Broker)
-Login to [IBM Bluemix](https://console.ng.bluemix.net)
+Login to [IBM Cloud](https://console.ng.bluemix.net)
 
 Select the service [Catalog](https://console.ng.bluemix.net/catalog/) icon in the upper right
 

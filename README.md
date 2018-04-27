@@ -9,6 +9,10 @@
 ## Overview and goal
 Over the past few years, we’ve seen a significant rise in popularity for intelligent personal assistants, such as Apple’s Siri, Amazon Alexa, and Google Assistant. Though they initially appeared to be little more than a novelty, they’ve evolved to become rather useful as a convenient interface to interact with service APIs and IoT connected devices. This developer pattern will guide users through setting up their own starter home automation hub by using a Raspberry PI to turn power outlets off and on. Once the circuit and software dependencies are installed and configured properly, users will also be able to leverage Watson’s language services to control the power outlets via voice and/or text commands. Furthermore, we’ll show how IBM Cloud Functions serverless functions can be leveraged to trigger these sockets based on a timed schedule, changes to the weather, motion sensors being activated, etc.
 
+Audience level: Intermediate. User will need basic hardware skills to assemble electronic circuits on a breadboard, and be somewhat familiar with a Linux terminal to install Raspberry Pi dependencies.
+
+IBM Cloud Plans: This project will work with the Free/Lite version of all required services: Speech To Text, Text To Speech, Watson Assistant, and IBM Cloud Functions.
+
 Click here to view the [IBM Pattern](https://developer.ibm.com/code/patterns/implement-voice-controls-for-serverless-home-automation-hub/) for this project.
 
 ## Prerequisites
@@ -37,7 +41,7 @@ You will need the following accounts and tools:
   * Install Software Dependencies + Libraries
   * Capture RF codes corresponding to wireless sockets
 - [Provision IBM Cloud Services](#provision-and-configure-platform-services)
-- [Create Serverless Functions](#IBM Cloud Functions)
+- [Create Serverless Functions](ibm_cloud_functions)
 - [Deploy to IBM Cloud](#bluemix)
 
 * **Configure Hardware Components**
@@ -73,12 +77,12 @@ Once the script completes run `gpio readall` to ensure that wiringPi installed s
 
 Now we can determine which RF codes correspond with the Etekcity outlets. Start by executing
 ```
-sudo /var/www/rfoutlet/RFSniffer
+sudo /opt/433Utils/RPi_utils/RFSniffer
 ```
 
 This will listen on the RF receiver for incoming signals, and write them to stdout. As the on/off buttons are pressed on the Etekcity remote, the Raspberry Pi should show the following output if the circuit is wired correctly.
 ```
-pi@raspberrypi:~ $ sudo /var/www/rfoutlet/RFSniffer
+pi@raspberrypi:~ $ sudo /opt/433Utils/RPi_utils/RFSniffer
 Received 5528835
 Received pulse 190
 Received 5528844
@@ -97,8 +101,8 @@ Now, plug in the associated socket, and run the following command to ensure the 
 
 ```
 source /etc/environment
-/var/www/rfoutlet/codesend ${RF_PLUG_ON_1} -l ${RF_PLUG_ON_PULSE_1}
-/var/www/rfoutlet/codesend ${RF_PLUG_OFF_1} -l ${RF_PLUG_OFF_PULSE_1}
+/opt/433Utils/RPi_utils/codesend ${RF_PLUG_ON_1} -l ${RF_PLUG_ON_PULSE_1}
+/opt/433Utils/RPi_utils/codesend ${RF_PLUG_OFF_1} -l ${RF_PLUG_OFF_PULSE_1}
 ```
 
 Now that we can control the sockets manually via cli, we’ll move forward and experiment with different ways to control them in an automated fashion. Rather than writing and executing pipelines and complex automation logic on the Raspberry Pi, we’ll utilize a serverless, event driven platform called IBM Cloud Functions. In this implementation, IBM Cloud Functions actions communicate with the Raspberry Pi via MQTT messages.
@@ -154,13 +158,13 @@ Then insert the corresponding credentials when running the commands below.
 
 ```
 wsk action update conversation -p username ${conversation_username} -p password ${conversation_password} -p workspace_id ${conversation_workspace_id}
-wsk action update iot-pub -p org ${iot_org_id} -p device_id ${device_id} -p api_token ${api_token}
+wsk action update iot-pub -p iot_org_id ${iot_org_id} -p device_id ${device_id} -p api_token ${api_token} -p device_type ${device_type}
 wsk package bind /whisk.system/watson-speechToText myWatsonSpeechToText -p username ${stt_username} -p password ${stt_password}
 ```
 
 Next, we can arrange the actions into a sequence
 ```
-wsk action create homeSequence --sequence /myWatsonSpeechToText/speechToText,conversation,iot-pub
+wsk action create homeSequence --sequence myWatsonSpeechToText/speechToText,conversation,iot-pub
 ```
 
 <!-- TODO, update node server with multi-devices from Pi -->
@@ -204,6 +208,15 @@ To deploy a node red instance to IBM Cloud, click the button below
 RF Circuit:
 After checking each of the wires to ensure they are lined up correctly, use a [multimeter](https://learn.sparkfun.com/tutorials/how-to-use-a-multimeter) to check each of the connection nodes starting from the power source. For example, to ensure that RF components are being powered properly, touch the negative/grounded end of the multimeter to the grounded power rail, and touch the positive end of the multimeter to the RF components 5V pin.
 
+Audio:
+Jack Server
+```
+# jack server is not running or cannot be started
+
+DISPLAY=:0 jack_control start
+pulseaudio --start
+```
+
 IBM Cloud Services:
 Whenever any of the IBM Cloud components (Speech to Text, Assistant, etc) seem to be unresponsive, check the [IBM Cloud Status page](https://status.ng.bluemix.net/) to see if the service is down or under maintenance. If not, try running a sample request using curl and ensure that a 200 HTTP response is returned. A sample request against the speech-to-text service would look like so.
 ```
@@ -231,30 +244,6 @@ Visit the [Twilio logging](https://www.twilio.com/console/sms/logs) url to view 
 * [IBM Watson IoT Platform Developers Community](https://developer.ibm.com/iotplatform/)
 * [Simulate IoT Device](https://github.com/IBM/manage-control-device-node-red)
 * [Node-RED](https://nodered.org/)
-
-
-## Privacy notice
-This web application includes code to track deployments to [IBM Cloud](https://www.bluemix.net/) and other Cloud Foundry platforms. The following information is sent to a [Deployment Tracker](https://github.com/IBM/metrics-collector-service) service on each deployment:
-
-* Node.js package version
-* Node.js repository URL
-* Cloudant database
-* Watson visual recognition service
-* Application Name (`application_name`)
-* Application GUID (`application_id`)
-* Application instance index number (`instance_index`)
-* Space ID (`space_id`)
-* Application Version (`application_version`)
-* Application URIs (`application_uris`)
-* Node-RED package version
-* Labels of bound services
-* Number of instances for each bound service and associated plan information
-* Metadata in the `repository.yaml` file
-
-This data is collected from the `package.json` and `repository.yaml` file in the sample application and the `VCAP_APPLICATION` and `VCAP_SERVICES` environment variables in IBM Cloud and other Cloud Foundry platforms. This data is used by IBM to track metrics around deployments of sample applications to IBM Cloud to measure the usefulness of our examples, so that we can continuously improve the content we offer to you. Only deployments of sample applications that include code to ping the Deployment Tracker service will be tracked.
-
-## Disabling deployment tracking
-Deployment tracking can be disabled by removing the `require("metrics-tracker-client").track();` line from the `index.js` file.
 
 ## License
 [Apache 2.0](LICENSE)
