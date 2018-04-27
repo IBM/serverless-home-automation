@@ -198,7 +198,7 @@ As an alternative to creating sequences in IBM Cloud Functions, the home automat
 
 To deploy a node red instance to IBM Cloud, click the button below
 
-[![Deploy to IBM Cloud](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/kkbankol-ibm/node-red-bluemix-starter.git)
+[![Deploy to IBM Cloud](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/IBM/serverless-home-automation.git)
 
 [Sample IBM Cloud Instance](http://serverless-home-automation.mybluemix.net/red/#flow/e711dbd4.4e7d18)
 
