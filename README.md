@@ -246,28 +246,5 @@ Visit the [Twilio logging](https://www.twilio.com/console/sms/logs) url to view 
 * [Node-RED](https://nodered.org/)
 
 
-## Privacy notice
-This web application includes code to track deployments to [IBM Cloud](https://www.bluemix.net/) and other Cloud Foundry platforms. The following information is sent to a [Deployment Tracker](https://github.com/IBM/metrics-collector-service) service on each deployment:
-
-* Node.js package version
-* Node.js repository URL
-* Cloudant database
-* Watson visual recognition service
-* Application Name (`application_name`)
-* Application GUID (`application_id`)
-* Application instance index number (`instance_index`)
-* Space ID (`space_id`)
-* Application Version (`application_version`)
-* Application URIs (`application_uris`)
-* Node-RED package version
-* Labels of bound services
-* Number of instances for each bound service and associated plan information
-* Metadata in the `repository.yaml` file
-
-This data is collected from the `package.json` and `repository.yaml` file in the sample application and the `VCAP_APPLICATION` and `VCAP_SERVICES` environment variables in IBM Cloud and other Cloud Foundry platforms. This data is used by IBM to track metrics around deployments of sample applications to IBM Cloud to measure the usefulness of our examples, so that we can continuously improve the content we offer to you. Only deployments of sample applications that include code to ping the Deployment Tracker service will be tracked.
-
-## Disabling deployment tracking
-Deployment tracking can be disabled by removing the `require("metrics-tracker-client").track();` line from the 'index.js' file.
-
 ## License
 [Apache 2.0](LICENSE)
