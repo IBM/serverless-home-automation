@@ -119,7 +119,7 @@ Once the Raspberry Pi is setup, we'll need to configure it to recognize audio in
 - [Twilio](https://console.bluemix.net/catalog/services/twilio)
 <!-- - [IBM Cloud Functions](https://console.bluemix.net/openwhisk) -->
 
-A IBM Cloud Account is required to provision these services. After logging in, simply navigate to each of the links above, and select the "Create Service" button.
+A IBM Cloud Account is required to provision these services. After logging in, simply navigate to each of the links above, and select the `Create Service` button.
 
 *Create Service*
 <p align="center">
@@ -128,7 +128,7 @@ A IBM Cloud Account is required to provision these services. After logging in, s
 
 * **Watson Assistant**
 
-The [Watson Assistant](https://www.ibm.com/watson/developercloud/conversation.html) service is used to analyze natural language and determine which action(s) to take based on the user input. There are two main concepts to understand here. The first are referred to as "Intents", which determine what the user would like the application to do. Next, we have "Entities", which provide context of where the intent should be applied. To keep things simple, we have two intents, one is titled "turnoff", the other "turnon". Next, we have 3 entities, which are household devices that we'd like to turn off and on in this case. This pre-trained data model can be uploaded to the provisioned Watson Assistant service through the UI. To initiate the upload, login to the IBM Cloud console. Next select the Watson Assistant service, and then the button titled "Launch Tool".
+The [Watson Assistant](https://www.ibm.com/watson/developercloud/conversation.html) service is used to analyze natural language and determine which action(s) to take based on the user input. There are two main concepts to understand here. The first are referred to as "Intents", which determine what the user would like the application to do. Next, we have "Entities", which provide context of where the intent should be applied. To keep things simple, we have two intents, one is titled "turnoff", the other "turnon". Next, we have 3 entities, which are household devices that we'd like to turn off and on in this case. This pre-trained data model can be uploaded to the provisioned Watson Assistant service through the UI. To initiate the upload, login to the IBM Cloud console. Next select the `Watson Assistant` service, and then the button titled `Launch Tool`.
 
 * **Watson IoT Platform**
 
@@ -136,7 +136,7 @@ The Watson IoT Platform will be utilized as a MQTT messaging broker. This is a l
 
 * **IBM Cloud Functions**
 
-Rather than writing and executing pipelines and complex automation logic on the Raspberry Pi, we’ll utilize a serverless, event driven platform called [IBM Cloud Functions](https://console.ng.bluemix.net/openwhisk). In this implementation, IBM Cloud Functions actions forward their results  to the Raspberry Pi as MQTT messages. IBM Cloud Functions is a serverless framework which has the ability to bind snippets of code to REST API endpoints. Once these have been created, they can be executed directly from any internet connected device, or they can respond to events such as a database change or a message coming in to a specific MQTT channel. Once these snippets, or "Actions" have been created, they may be chained together as a sequence, as seen above in the architecture diagram.
+Rather than writing and executing pipelines and complex automation logic on the Raspberry Pi, we’ll utilize a serverless, event driven platform called [IBM Cloud Functions](https://console.ng.bluemix.net/openwhisk). In this implementation, IBM Cloud Functions actions forward their results to the Raspberry Pi as MQTT messages. IBM Cloud Functions is a serverless framework which has the ability to bind snippets of code to REST API endpoints. Once these have been created, they can be executed directly from any internet connected device, or they can respond to events such as a database change or a message coming in to a specific MQTT channel. Once these snippets, or "Actions" have been created, they may be chained together as a sequence, as seen above in the architecture diagram.
 
 To get started, we will create a sequence that consists of three actions. The first action will transcribe an audio payload to text. The second action will analyze the transcribed text result using the Watson Assistant service. This analysis will extract the intent behind the spoken message, and determine what the user would like the Raspberry Pi to do. So, for example, if the user says something along the line of “Turn on the light” or “Flip the switch”, the NLC service will be able to interpret that. Finally, the third action will send a MQTT message that’ll notify the Raspberry Pi to switch the socket on/off.
 
@@ -244,30 +244,6 @@ Visit the [Twilio logging](https://www.twilio.com/console/sms/logs) url to view 
 * [IBM Watson IoT Platform Developers Community](https://developer.ibm.com/iotplatform/)
 * [Simulate IoT Device](https://github.com/IBM/manage-control-device-node-red)
 * [Node-RED](https://nodered.org/)
-
-
-## Privacy notice
-This web application includes code to track deployments to [IBM Cloud](https://www.bluemix.net/) and other Cloud Foundry platforms. The following information is sent to a [Deployment Tracker](https://github.com/IBM/metrics-collector-service) service on each deployment:
-
-* Node.js package version
-* Node.js repository URL
-* Cloudant database
-* Watson visual recognition service
-* Application Name (`application_name`)
-* Application GUID (`application_id`)
-* Application instance index number (`instance_index`)
-* Space ID (`space_id`)
-* Application Version (`application_version`)
-* Application URIs (`application_uris`)
-* Node-RED package version
-* Labels of bound services
-* Number of instances for each bound service and associated plan information
-* Metadata in the `repository.yaml` file
-
-This data is collected from the `package.json` and `repository.yaml` file in the sample application and the `VCAP_APPLICATION` and `VCAP_SERVICES` environment variables in IBM Cloud and other Cloud Foundry platforms. This data is used by IBM to track metrics around deployments of sample applications to IBM Cloud to measure the usefulness of our examples, so that we can continuously improve the content we offer to you. Only deployments of sample applications that include code to ping the Deployment Tracker service will be tracked.
-
-## Disabling deployment tracking
-Deployment tracking can be disabled by removing the `require("metrics-tracker-client").track();` line from the 'index.js' file.
 
 ## License
 [Apache 2.0](LICENSE)
