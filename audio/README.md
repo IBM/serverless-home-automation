@@ -5,10 +5,10 @@
 - Raspberry Pi 3 with Raspbian OS
 - Generic USB Microphone
 
-### Create Hotword
+### Configure Hotword using Snowboy service
 Let's start with creating custom wakeword in order to trigger speec to text transcription. For example, we can create a hotword engine that would listen on wake word such as **Hey Watson** or **Hello Watson** or **Hi Watson** once it detects the wake word through audio interface, we can then use the subsequent audio for transcription.
 
-We used Snowboy for this purpose. First create a hotword from their [website](https://snowboy.kitt.ai/). You will need to login with Github, Google or Facebook in order to create hotword.
+We used Snowboy for this purpose. First create a hotword from their official [website](https://snowboy.kitt.ai/).
 
 Once you create a hotword with three audio samples, you can now download the model which we will use in the later section.
 
@@ -54,7 +54,7 @@ Test end-to-end sequence with the following command
 python demo_arecord.py Hey_Watson_PI.pmdl
 ```
 
-When the wakeword is detected, the `wsk_transcribe_audio` method defined [here](https://github.com/kkbankol-ibm/snowboy/blob/26f49a6a12088f2c2797d68db5ef7eda88798deb/examples/Python/snowboydecoder.py#L61:L770) will record audio for 3 seconds, convert the wav result to a smaller, lossless flac audio file, and then forward the flac audio to the openwhisk sequence. The `whisk_namespace`, `whisk_action`, and `auth` values in the method will all need to be updated with your personal account. These values can be found by running `wsk property get` and `wsk action list`.
+When the wakeword is detected, the `wsk_transcribe_audio` method defined [here](https://github.com/kkbankol-ibm/snowboy/blob/26f49a6a12088f2c2797d68db5ef7eda88798deb/examples/Python/snowboydecoder.py#L61:L77) will record audio for 3 seconds, convert the wav result to a smaller, lossless flac audio file, and then forward the flac audio to the openwhisk sequence. The `whisk_namespace`, `whisk_action`, and `auth` values in the method will all need to be updated with your personal account. These values can be found by running `wsk property get` and `wsk action list`.
 
 ### Troubleshooting
 ```

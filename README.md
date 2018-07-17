@@ -143,7 +143,7 @@ To get started, we will create a sequence that consists of three actions. The fi
 The speech to text action is already built in to IBM Cloud Functions as a public package, so we’ll just need to supply our credentials for that service. Moving forward, we can create the additional actions with the following commands.
 
 ```
-cd serverless-home-automation/iot_gateway/whisk_actions
+cd serverless-home-automation/ibm_cloud_functions
 wsk action create conversation conversation.js
 wsk action create iot-pub iot-pub.py
 ```
