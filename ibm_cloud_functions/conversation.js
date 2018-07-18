@@ -17,27 +17,30 @@ var request = require('request');
 function main(params) {
    var username = params.username
    var password = params.password
+   var iamApiKey  = params.iamApiKey
    var workspace_id = params.workspace_id
+   var auth = {"user": username,"pass":password}
+   var url = "https://gateway.watsonplatform.net/assistant/api/v1/workspaces/" + workspace_id + "/message?version=2018-07-10"
+   if(iamApiKey){
+    auth = {"user": "apikey","pass":iamApiKey}
+    url = "https://gateway-wdc.watsonplatform.net/assistant/api/v1/workspaces/" + workspace_id + "/message?version=2018-07-10"
+   }   
    var input_text = params.data
-   var url = "https://gateway.watsonplatform.net/conversation/api/v1/workspaces/" + workspace_id + "/message?version=2017-04-21"
    var body = {"input": {"text": input_text}}
    return new Promise(function(resolve, reject) {
        request( {
            url: url,
            method: 'POST',
-           auth: {
-                   'user': username,
-                   'pass': password
-                 },
+           auth: auth,
            headers: {
-              "content-type": "application/json",
+              "content-type": "application/json",              
            },
            body: JSON.stringify({"input": {
                 "text": input_text
                 }})
          },
            function(error, response, body) {
-           if (error) {
+           if (error) {              
                reject(error);
            }
            else {

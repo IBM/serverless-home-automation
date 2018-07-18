@@ -1,4 +1,4 @@
-![Architecture](/images/serverless_flow.png "Architecture")
+![Architecture](images/serverless_flow.png "Architecture")
 
 ## Natural Language Interface based Home Automation
 
@@ -56,13 +56,9 @@ We can get started by assembling and configuring the RF circuit. This circuit re
 
 Once all components have been obtained, assemble them to form the circuit below. In this circuit, we have the Raspberry Pi connected to the electronic breadboard via the GPIO ribbon/breakout board.
 
-![Circuit](/images/home_automation_labeled.png "CircuitFritzing")
+![Circuit](images/home_automation_labeled.png "CircuitFritzing")
 
 <!-- Transmitter/Receiver datasheet http://www.mantech.co.za/Datasheets/Products/433Mhz_RF-TX&RX.pdf -->
-
-<!-- <p align="center">
-<img src="/images/home_automation_bb.svg" data-canonical-src="/images/home_automation_bb.svg" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
-</p> -->
 
 The red wire just left of the breakout board is responsible for bridging 5 volts from the Raspberry Pi to one of the breadboard's power rails. The additional red wires to the bottom right of the diagram supply those 5 volts from the power rail to the RF receiver and transmitter. Similar concept for the white wires, except those provide a negative charge, commonly referenced to as "ground". Next, we have the green wire that connects the Raspberry Pi's GPIO pin 17 to the transmitter's data pin, and the black wire connects the GPIO pin 27 to the receiver's data pin. The reason for this can be seen in the `gpio readall` output in image below, as the transmitter defaults to [wiringPi pin 0](https://github.com/ninjablocks/433Utils/blob/master/RPi_utils/codesend.cpp#L27) which maps to BCM 17, and the receiver defaults to [wiringPi pin 2](https://github.com/ninjablocks/433Utils/blob/master/RPi_utils/RFSniffer.cpp#L25), which maps to BCM 27. These default pins can be changed by modifying either of the linked files in the 433Utils library, and recompiling the library.
 
@@ -72,7 +68,7 @@ The open source libraries that are being installed here are [wiringPi](http://wi
 
 Once the script completes run `gpio readall` to ensure that wiringPi installed successfully. The following chart should be displayed.
 <p align="center">
-<img src="/images/gpio_output.png" data-canonical-src="/images/gpio_output.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
+<img src="images/gpio_output.png" data-canonical-src="images/gpio_output.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
 </p>
 
 Now we can determine which RF codes correspond with the Etekcity outlets. Start by executing
@@ -123,7 +119,7 @@ A IBM Cloud Account is required to provision these services. After logging in, s
 
 *Create Service*
 <p align="center">
-<img src="/images/service_create.png" data-canonical-src="/images/service_create.png" width="700" height="450" style="margin-left: auto; margin-right: auto;" />
+<img src="images/service_create.png" data-canonical-src="images/service_create.png" width="700" height="450" style="margin-left: auto; margin-right: auto;" />
 </p>
 
 * **Watson Assistant**
@@ -150,17 +146,32 @@ wsk action create iot-pub iot-pub.py
 
 Once the actions are successfully created, we can set default service credentials for each of the actions. Otherwise we’d have to pass in the service credentials every time we’d like our actions to call the Watson services. To obtain these credentials, click each provisioned service in the IBM Cloud dashboard, and then select the `View credentials` dropdown.
 
-<p align="center">
-<img src="/images/stt_creds.png" data-canonical-src="/images/stt_creds.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
-</p>
+![](images/stt_creds.png)
 
 Then insert the corresponding credentials when running the commands below.
+
+* If the service credentials from IBM Watson Assistant are username/password based as shown in the diagram below, populate the username, password and workspace_id fields and comment out the IAM credentials fields.
+
+![](https://github.com/IBM/pattern-images/raw/master/watson-assistant/WatsonAssistantCredentials.png)
+
 
 ```
 wsk action update conversation -p username ${conversation_username} -p password ${conversation_password} -p workspace_id ${conversation_workspace_id}
 wsk action update iot-pub -p iot_org_id ${iot_org_id} -p device_id ${device_id} -p api_token ${api_token} -p device_type ${device_type}
 wsk package bind /whisk.system/watson-speechToText myWatsonSpeechToText -p username ${stt_username} -p password ${stt_password}
 ```
+
+* If the service credentials from IBM Watson Assistant are IAM based as shown below in the diagram, populate the IAM apikey, url, and workspace_id fields and comment out the username/password fields
+
+![](https://github.com/IBM/pattern-images/raw/master/watson-assistant/watson_assistant_api_key.png)
+
+
+```
+wsk action update conversation -p iamApiKey ${apikey} -p workspace_id ${conversation_workspace_id}
+wsk action update iot-pub -p iot_org_id ${iot_org_id} -p device_id ${device_id} -p api_token ${api_token} -p device_type ${device_type}
+wsk package bind /whisk.system/watson-speechToText myWatsonSpeechToText -p username ${stt_username} -p password ${stt_password}
+```
+
 
 Next, we can arrange the actions into a sequence
 ```
@@ -184,17 +195,14 @@ Twilio is a service that enables developers to integrate VoIP and SMS capabiliti
 To get started, please visit Twilio's registration [page](https://www.twilio.com/try-twilio). After signing up, log in and select the `#` icon in the menu, which will direct the browser to the [Phone Numbers](https://www.twilio.com/console/phone-numbers/incoming) configuration. Now, select the circular `+` button to select and register a number. After registration, click the number to configure it. Scrolling down will reveal a `Messaging` section. In the form titled `A Message Comes in`, paste the webhook associated with the "homeSequence" IBM Cloud Functions action, as seen below.
 
 <p align="center">
-<img src="./images/configure_messaging_generic.png" data-canonical-src="./images/createdevicetype.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
+<img src="images/configure_messaging_generic.png" data-canonical-src="images/createdevicetype.png" width="600" height="400" style="margin-left: auto; margin-right: auto;" />
 </p>
 
 * **Node Red**
 
 As an alternative to creating sequences in IBM Cloud Functions, the home automation logic can be arranged using [Node Red](https://github.com/node-red/node-red). Node Red is a visual editor capable of assembling "flows", which is done by allowing users to drag, drop and connect "blocks" of code or service calls. It's worth noting that this deployment scheme won't follow a fully serverless model, as it'll be running constantly as a node server. Since the backend logic is all in the IBM Cloud Functions serverless action pool, the devices should be able to be controlled via SMS or voice without having to set up a long running server. However, in use cases where it's preferable to use node red, we can do so by installing the package via `npm install node-red`, booting up the editor via `node-red`, and creating a flow like what we have in the diagram below. After assembling the flow, be sure to populate the authentication credentials and endpoint for each block.
 
-![Node Red](/images/noderedscreen.png "Architecture")
-<!-- <p align="center">
-<img src="/images/noderedscreen.png" data-canonical-src="/images/service_create.png" height="450" style="margin-left: auto; margin-right: auto;" />
-</p> -->
+![Node Red](images/noderedscreen.png "Architecture")
 
 To deploy a node red instance to IBM Cloud, click the button below
 
@@ -210,6 +218,7 @@ After checking each of the wires to ensure they are lined up correctly, use a [m
 
 Audio:
 Jack Server
+
 ```
 # jack server is not running or cannot be started
 
