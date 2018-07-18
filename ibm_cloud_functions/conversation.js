@@ -27,8 +27,6 @@ function main(params) {
    }   
    var input_text = params.data
    var body = {"input": {"text": input_text}}
-   console.log(auth)
-   console.log(workspace_id)
    return new Promise(function(resolve, reject) {
        request( {
            url: url,
@@ -42,8 +40,7 @@ function main(params) {
                 }})
          },
            function(error, response, body) {
-           if (error) {
-              console.log(error)
+           if (error) {              
                reject(error);
            }
            else {
