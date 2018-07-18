@@ -150,7 +150,7 @@ Once the actions are successfully created, we can set default service credential
 
 Then insert the corresponding credentials when running the commands below.
 
-* If the service credentials from IBM Watson Assistant is username/password based as below populate the username, password and workspace_id and comment out the IAM credentials part.
+* If the service credentials from IBM Watson Assistant are username/password based as shown in the diagram below, populate the username, password and workspace_id fields and comment out the IAM credentials fields.
 
 ![](https://github.com/IBM/pattern-images/raw/master/watson-assistant/WatsonAssistantCredentials.png)
 
@@ -161,7 +161,7 @@ wsk action update iot-pub -p iot_org_id ${iot_org_id} -p device_id ${device_id} 
 wsk package bind /whisk.system/watson-speechToText myWatsonSpeechToText -p username ${stt_username} -p password ${stt_password}
 ```
 
-* If the service credentials from IBM Watson Assistant is IAM based as below, populate the IAM apikey, url, and workspace_id and comment out the username/password part
+* If the service credentials from IBM Watson Assistant are IAM based as shown below in the diagram, populate the IAM apikey, url, and workspace_id fields and comment out the username/password fields
 
 ![](https://github.com/IBM/pattern-images/raw/master/watson-assistant/watson_assistant_api_key.png)
 
